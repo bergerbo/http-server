@@ -7,7 +7,7 @@ import java.net.Socket;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        ServerSocket serverSocket = new ServerSocket(8080);
+        ServerSocket serverSocket = new ServerSocket(8082);
         Socket socket = serverSocket.accept();
 
         BufferedReader in = new BufferedReader (new InputStreamReader(socket.getInputStream ()));
@@ -16,8 +16,8 @@ public class Main {
             String cominginText = "";
             try
             {
-                cominginText = in.readLine ();
-                System.out.println (cominginText);
+                HttpRequest req = HttpRequest.parse(in);
+
             }
             catch (IOException e)
             {
@@ -26,6 +26,8 @@ public class Main {
                 break;
             }
         }
+
+        serverSocket.close();
     }
 
 }
