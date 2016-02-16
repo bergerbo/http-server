@@ -5,36 +5,41 @@ import java.util.HashMap;
  * Created by hoboris on 2/16/16.
  */
 public class HttpResponse {
-    private int statusCode;
-    private String reason;
-    private HashMap<String,String> headers;
+
+    private String title;
     private String body;
+    private int statusCode;
 
-    public HttpResponse(){
-        headers = new HashMap<>();
-    }
-
-    public int getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(int statusCode) {
+    public HttpResponse(String title, String body, int statusCode) {
+        this.title = title;
+        this.body = body;
         this.statusCode = statusCode;
     }
 
-    public String getReason() {
-        return reason;
+    private String statusCodeMessage() {
+        if (200 >= statusCode && statusCode < 300) {
+            return "OK";
+        }
+        if (300 >= statusCode && statusCode < 400) {
+            return "BAAAAAAD";
+        }
+        if (400 >= statusCode && statusCode < 500) {
+            return "Holy FUCK";
+        }
+        return "Unreal";
     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
+    private String headers() {
+        return "HTTP/1.1 " + Integer.toString(statusCode) + " " + statusCodeMessage() + "\r\n" +
+                "Content-Type: text/html\r\n" +
+                "Content-Length: " + output().length() + "\r\n\r\n";
     }
 
-    public void addHeader(String header, String value) {
-        headers.put(header,value);
+    private String output() {
+        return "<html><head><title>" + title + "</title></head><body><p>" + body + "</p></body></html>";
     }
 
-    public String getHeader(String header) {
-        return headers.get(header);
+    public String content() {
+        return headers() + output();
     }
 }
