@@ -6,12 +6,11 @@ import java.util.HashMap;
  */
 public class HttpResponse {
 
-    private String title;
     private String body;
     private int statusCode;
 
-    public HttpResponse(String title, String body, int statusCode) {
-        this.title = title;
+
+    public HttpResponse(String body, int statusCode) {
         this.body = body;
         this.statusCode = statusCode;
     }
@@ -32,14 +31,10 @@ public class HttpResponse {
     private String headers() {
         return "HTTP/1.1 " + Integer.toString(statusCode) + " " + statusCodeMessage() + "\r\n" +
                 "Content-Type: text/html\r\n" +
-                "Content-Length: " + output().length() + "\r\n\r\n";
-    }
-
-    private String output() {
-        return "<html><head><title>" + title + "</title></head><body><p>" + body + "</p></body></html>";
+                "Content-Length: " + body.length() + "\r\n\r\n";
     }
 
     public String content() {
-        return headers() + output();
+        return headers() + body;
     }
 }

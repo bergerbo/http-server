@@ -49,8 +49,25 @@ public class Server {
                 );
                 System.out.println("Got a client !");
 
-                // TODO: Parse the request and send corresponding response
-                HttpResponse res = new HttpResponse("yeaaa", "shit happens", 500);
+                HttpRequest request = HttpRequest.parse(bufferedReader);
+
+                HttpResponse res = new HttpResponse("Internal Error",500);
+                String contentType;
+                if( (contentType= request.getHeader("Content-type")) != null ){
+                    switch (contentType){
+                        case "text/plain":
+                            res = new HttpResponse(request.toText(),500);
+                            break;
+                        case "text/html":
+                            res = new HttpResponse(request.toHtml(),500);
+                            break;
+                        case "application/json":
+                            res = new HttpResponse(request.toJson(),500);
+                            break;
+                    }
+                }
+
+
                 System.out.println(res.content());
 
                 bufferedWriter.write(res.content());
@@ -60,6 +77,8 @@ public class Server {
             } catch (IOException e) {
                 e.printStackTrace();
                 return;
+            } catch (BadlyFormedHttpRequest badlyFormedHttpRequest) {
+                badlyFormedHttpRequest.printStackTrace();
             }
 
             try {
