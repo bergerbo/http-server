@@ -11,20 +11,17 @@ public class Server {
     public void startServer() {
         final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
 
-        Runnable serverTask = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ServerSocket serverSocket = new ServerSocket(8080);
-                    System.out.println("Waiting for clients to connect...");
-                    while (true) {
-                        Socket clientSocket = serverSocket.accept();
-                        clientProcessingPool.submit(new ClientTask(clientSocket));
-                    }
-                } catch (IOException e) {
-                    System.err.println("Unable to process client request");
-                    e.printStackTrace();
+        Runnable serverTask = () -> {
+            try {
+                ServerSocket serverSocket = new ServerSocket(8080);
+                System.out.println("Waiting for clients to connect...");
+                while (true) {
+                    Socket clientSocket = serverSocket.accept();
+                    clientProcessingPool.submit(new ClientTask(clientSocket));
                 }
+            } catch (IOException e) {
+                System.err.println("Unable to process client request");
+                e.printStackTrace();
             }
         };
         Thread serverThread = new Thread(serverTask);
