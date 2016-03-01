@@ -1,7 +1,10 @@
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringJoiner;
 
 /**
  * Created by hoboris on 2/16/16.
@@ -25,7 +28,7 @@ public class HttpRequest {
 
         String[] request = methodLine.split(" ");
 
-        if(request.length != 3)
+        if (request.length != 3)
             throw new BadlyFormedHttpRequest();
 
         HttpRequest req = new HttpRequest();
@@ -85,6 +88,7 @@ public class HttpRequest {
     public void setBody(String body) {
         this.body = body;
     }
+
     public String getUrl() {
         return url;
     }
@@ -102,48 +106,69 @@ public class HttpRequest {
     }
 
     public String toJson() {
-        StringBuffer str = new StringBuffer();
+        JsonObjectBuilder job = Json.createObjectBuilder();
+        job.add("method", method.toString());
+        job.add("url", url);
+        job.add("protocol", protocol);
 
-        str.append(method.toString());
-        str.append(" ");
-        str.append(url);
-        str.append(" ");
-        str.append(protocol);
-        str.append("\n");
 
-        for (Map.Entry header: headers.entrySet()) {
-            str.append(header.getKey());
-            str.append("");
-            str.append(header.getValue());
-            str.append("\n");
+        if (headers.size() > 0) {
+
+            JsonObjectBuilder hob = Json.createObjectBuilder();
+            for (Map.Entry<String, String> header : headers.entrySet()) {
+                hob.add(header.getKey(), header.getValue());
+            }
+
+            job.add("headers", hob);
         }
 
-        str.append("\n");
-        str.append(body);
+        if (body != null)
+            job.add("body", body);
 
-        return str.toString();
+        return job.build().toString();
     }
 
     public String toHtml() {
         StringBuffer str = new StringBuffer();
 
+        str.append("<html><head><title>" + method.toString() + " " + url + "</title></head><body>");
+        str.append("<h1>");
+        str.append("\n");
         str.append(method.toString());
         str.append(" ");
         str.append(url);
         str.append(" ");
         str.append(protocol);
         str.append("\n");
+        str.append("</h1>");
 
-        for (Map.Entry header: headers.entrySet()) {
-            str.append(header.getKey());
-            str.append("");
-            str.append(header.getValue());
-            str.append("\n");
+        if (headers.size() > 0) {
+
+            str.append("<table><tr><th>Header</th><th>Value</th></tr>");
+            for (Map.Entry header : headers.entrySet()) {
+                str.append("<tr>");
+
+                str.append("<td>");
+                str.append(header.getKey());
+                str.append("</td>");
+
+                str.append("<td>");
+                str.append(header.getValue());
+                str.append("</td>");
+
+                str.append("</tr>");
+            }
+            str.append("</table>");
         }
 
-        str.append("\n");
-        str.append(body);
+        if (body != null) {
 
+            str.append("<div>");
+            str.append(body);
+            str.append("</div>");
+        }
+
+        str.append("</body></html>");
         return str.toString();
     }
 
@@ -157,15 +182,16 @@ public class HttpRequest {
         str.append(protocol);
         str.append("\n");
 
-        for (Map.Entry header: headers.entrySet()) {
+        for (Map.Entry header : headers.entrySet()) {
             str.append(header.getKey());
-            str.append("");
+            str.append(": ");
             str.append(header.getValue());
             str.append("\n");
         }
 
         str.append("\n");
-        str.append(body);
+        if (body != null)
+            str.append(body);
 
         return str.toString();
     }
