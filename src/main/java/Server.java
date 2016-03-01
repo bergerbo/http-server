@@ -1,3 +1,5 @@
+package main.java;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -56,13 +58,13 @@ public class Server {
                 if( (contentType= request.getHeader("Content-type")) != null ){
                     switch (contentType){
                         case "text/plain":
-                            res = new HttpResponse(request.toText(),500);
+                            res = new HttpResponse(request.toText(), 200);
                             break;
                         case "text/html":
-                            res = new HttpResponse(request.toHtml(),500);
+                            res = new HttpResponse(request.toHtml(), 200);
                             break;
                         case "application/json":
-                            res = new HttpResponse(request.toJson(),500);
+                            res = new HttpResponse(request.toJson(), 200);
                             break;
                     }
                 }
