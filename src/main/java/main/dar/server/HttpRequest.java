@@ -1,4 +1,6 @@
-package main.java;
+package main.dar.server;
+
+import main.dar.server.exception.BadlyFormedHttpRequest;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
@@ -6,13 +8,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringJoiner;
 
 /**
  * Created by hoboris on 2/16/16.
  */
 public class HttpRequest {
 
+    public HashMap<String, String> getParameters() {
+        return null;
+    }
 
     public enum Method {
         GET, POST, PUT, CREATE

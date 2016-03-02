@@ -1,4 +1,4 @@
-package main.java;
+package main.dar.server.exception;
 
 /**
  * Created by hoboris on 2/22/16.

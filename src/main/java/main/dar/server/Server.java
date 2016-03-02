@@ -1,4 +1,6 @@
-package main.java;
+package main.dar.server;
+
+import main.dar.server.exception.BadlyFormedHttpRequest;
 
 import java.io.*;
 import java.net.ServerSocket;
