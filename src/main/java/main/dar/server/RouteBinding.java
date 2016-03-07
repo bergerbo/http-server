@@ -1,8 +1,11 @@
 package main.dar.server;
 
 import main.dar.server.annotation.Param;
+import main.dar.server.annotation.WebHandler;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -11,20 +14,23 @@ import java.util.HashMap;
 public class RouteBinding {
     private  String url;
     private HttpRequest.Method httpMethod;
-    private Param[] params;
-//    private HashMap
+    private ArrayList<Param> params;
 
+    private Object handler;
     private Method method;
 
-    void bindUrl(String url) {
+    public RouteBinding(Object handler, Method method, HttpRequest.Method httpMethod, String url) {
+        this.handler = handler;
+        this.method = method;
+
+        this.httpMethod = httpMethod;
         this.url = url;
+        params = new ArrayList<Param>();
     }
 
-    void bindHttpMethod(HttpRequest.Method method) {
-        this.httpMethod = method;
+    public void addParam(Param httpParam) {
+        params.add(httpParam);
     }
-
-    // TODO: add params' setter
 
     public boolean match(HttpRequest request){
         if (!request.getMethod().equals(httpMethod)) {
@@ -43,14 +49,25 @@ public class RouteBinding {
         }
 
 
-
         request.getParameters();
 
         return true;
     }
 
     public HttpResponse process(HttpRequest request){
-        return null;
+        try {
+            return (HttpResponse) method.invoke(handler,bindParams(request));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Object[] bindParams(HttpRequest request) {
+        return new Object[0];
     }
 
 

@@ -2,12 +2,17 @@ package main.dar.server;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Set;
 
 import main.dar.server.annotation.Param;
 import main.dar.server.annotation.Route;
+import main.dar.server.annotation.WebHandler;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
@@ -21,54 +26,51 @@ public class Router {
         return ourInstance;
     }
 
+    private static ArrayList<RouteBinding> bindings = new ArrayList<RouteBinding>();
+
     private Router() {
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage("main.dar.application"))
-                .setScanners(new MethodAnnotationsScanner()));
-        Set<Method> methods = reflections.getMethodsAnnotatedWith(Route.class);
-        System.out.println(methods);
+        try {
+            Reflections reflections = new Reflections(new ConfigurationBuilder()
+                    .setUrls(ClasspathHelper.forPackage("main.dar.application"))
+                    .setScanners(new TypeAnnotationsScanner(), new SubTypesScanner()));
+            Set<Class<?>> handlers = reflections.getTypesAnnotatedWith(WebHandler.class);
+            System.out.println(handlers);
 
-        for (Method m : methods) {
-            System.out.println(m.getParameters().length);
-            for(Parameter p : m.getParameters()){
-                System.out.println(p.getParameterizedType());
-                System.out.println(p.getAnnotation(Param.class));
-                try {
-                    String x = (String) p.getType().newInstance();
-                    x = "123";
-                    System.out.println("x : " + x);
+            for (Class<?> handler : handlers) {
+                Method[] methods = handler.getMethods();
+                Object handlerInstance = handler.newInstance();
 
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                for (Method m : methods) {
+                    Route route;
+                    if ((route = m.getDeclaredAnnotation(Route.class)) != null) {
+
+                        RouteBinding binding = new RouteBinding(handlerInstance, m, route.method(), route.url());
+
+                        for (Parameter p : m.getParameters()) {
+                            Param httpParam;
+                            if ((httpParam = p.getDeclaredAnnotation(Param.class)) != null)
+                                binding.addParam(httpParam);
+                        }
+
+                        bindings.add(binding);
+                    }
                 }
+
             }
 
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
-
-//        for (Method one : getMethodsAnnotatedWith(AbcTest.class, Route.class)) {
-//            System.out.println(one.toString());
-//        }
     }
 
-    /*
-    public List<Method> getMethodsAnnotatedWith(final Class<?> type, final Class<? extends Annotation> annotation) {
-        final List<Method> methods = new ArrayList<Method>();
-        Class<?> klass = type;
-        while (klass != Object.class) { // need to iterated thought hierarchy in order to retrieve methods from above the current instance
-            // iterate though the list of methods declared in the class represented by klass variable, and add those annotated with the specified annotation
-            final List<Method> allMethods = new ArrayList<Method>(Arrays.asList(klass.getDeclaredMethods()));
-            for (final Method method : allMethods) {
-                if (method.isAnnotationPresent(annotation)) {
-                    Annotation annotInstance = method.getAnnotation(annotation);
-                    // TODO process annotInstance
-                    methods.add(method);
-                }
+    public RouteBinding match(HttpRequest request){
+        for (RouteBinding binding: bindings) {
+            if(binding.match(request)){
+                return binding;
             }
-            // move to the upper class in the hierarchy in search for more methods
-            klass = klass.getSuperclass();
         }
-        return methods;
-    }*/
+        return null;
+    }
 }
