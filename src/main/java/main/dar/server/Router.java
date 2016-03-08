@@ -26,7 +26,7 @@ public class Router {
         return ourInstance;
     }
 
-    private static ArrayList<RouteBinding> bindings = new ArrayList<RouteBinding>();
+    private ArrayList<RouteBinding> bindings;
 
     private Router() {
         try {
@@ -35,6 +35,8 @@ public class Router {
                     .setScanners(new TypeAnnotationsScanner(), new SubTypesScanner()));
             Set<Class<?>> handlers = reflections.getTypesAnnotatedWith(WebHandler.class);
             System.out.println(handlers);
+
+            bindings = new ArrayList<>();
 
             for (Class<?> handler : handlers) {
                 Method[] methods = handler.getMethods();

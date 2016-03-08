@@ -9,10 +9,11 @@ import main.dar.server.annotation.WebHandler;
  * Created by iShavgula on 01/03/16.
  */
 @WebHandler
-public class AbcTest {
+public class PointMaster {
 
-    @Route(method = HttpRequest.Method.GET, url = "/asd")
-    HttpResponse getAll(@Param("chocolat") String chocolat, @Param("C2") String c2, @Param("C3") String c3) {
+    @Route(method = HttpRequest.Method.GET, url = "/list")
+    public HttpResponse ListPoints() {
+        System.out.println("return list");
         return null;
     }
 }
