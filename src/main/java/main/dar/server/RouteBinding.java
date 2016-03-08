@@ -49,11 +49,11 @@ public class RouteBinding {
                 return false;
             }
 
-            String name = p.getParam().value();
+//            String name = p.getParam().value();
             String value = requestParameters.get(p.getParam().value());
-            Class<?> type = p.getType();
+//            Class<?> type = p.getType();
 
-            if (!canParseValueWithType(value, type)) {
+            if (!canParseValueWithParamType(value, p)) {
                 return false;
             }
         }
@@ -77,13 +77,12 @@ public class RouteBinding {
         return new Object[0];
     }
 
-    private boolean canParseValueWithType(String value, Class<?> type) {
-        if (type.toString().equals(String.class.toString())) {
+    private boolean canParseValueWithParamType(String value, ParamType type) {
+        if (type.isString()) {
             return true;
         }
 
-        if (type.toString().equals(Integer.class.toString()) ||
-                type.toString().equals(int.class.toString())) {
+        if (type.isInteger()) {
             try {
                 int _ = Integer.parseInt(value);
             } catch (NumberFormatException e) {
@@ -92,8 +91,7 @@ public class RouteBinding {
             return true;
         }
 
-        if (type.toString().equals(Double.class.toString()) ||
-                type.toString().equals(double.class.toString())) {
+        if (type.isDouble()) {
             try {
                 double _ = Double.parseDouble(value);
             } catch (NumberFormatException e) {
@@ -102,8 +100,7 @@ public class RouteBinding {
             return true;
         }
 
-        if (type.toString().equals(Float.class.toString()) ||
-                type.toString().equals(float.class.toString())) {
+        if (type.isFloat()) {
             try {
                 Float.parseFloat(value);
             } catch (NumberFormatException e) {
@@ -112,8 +109,7 @@ public class RouteBinding {
             return true;
         }
 
-        if (type.toString().equals(Boolean.class.toString()) ||
-                type.toString().equals(boolean.class.toString())) {
+        if (type.isBoolean()) {
             try {
                 Boolean.parseBoolean(value);
             } catch (NumberFormatException e) {
