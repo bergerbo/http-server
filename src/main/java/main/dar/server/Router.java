@@ -8,6 +8,7 @@ import java.util.Set;
 
 import main.dar.server.annotation.Param;
 import main.dar.server.annotation.Route;
+import main.dar.server.annotation.Types.ParamType;
 import main.dar.server.annotation.WebHandler;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
@@ -50,8 +51,10 @@ public class Router {
 
                         for (Parameter p : m.getParameters()) {
                             Param httpParam;
-                            if ((httpParam = p.getDeclaredAnnotation(Param.class)) != null)
-                                binding.addParam(httpParam);
+                            if ((httpParam = p.getDeclaredAnnotation(Param.class)) != null) {
+                                ParamType httpParamWithType = new ParamType(httpParam, p.getType());
+                                binding.addParam(httpParamWithType);
+                            }
                         }
 
                         bindings.add(binding);
@@ -59,7 +62,6 @@ public class Router {
                 }
 
             }
-
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

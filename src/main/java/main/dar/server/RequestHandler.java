@@ -37,6 +37,7 @@ class RequestHandler implements Runnable {
             RouteBinding binding = router.match(request);
             HttpResponse res = new HttpResponse("Internal Error", 500);
             if(binding != null){
+                //TODO: fix it
             String contentType;
             if ((contentType = request.getHeader("Content-Type")) != null) {
                 switch (contentType) {
