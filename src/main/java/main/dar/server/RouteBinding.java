@@ -1,6 +1,7 @@
 package main.dar.server;
 
 import main.dar.server.annotation.Param;
+import main.dar.server.annotation.Types.ParamType;
 import main.dar.server.annotation.WebHandler;
 
 import java.lang.reflect.InvocationTargetException;
@@ -14,7 +15,7 @@ import java.util.HashMap;
 public class RouteBinding {
     private  String url;
     private HttpRequest.Method httpMethod;
-    private ArrayList<Param> params;
+    private ArrayList<ParamType> params;
 
     private Object handler;
     private Method method;
@@ -25,10 +26,10 @@ public class RouteBinding {
 
         this.httpMethod = httpMethod;
         this.url = url;
-        params = new ArrayList<Param>();
+        params = new ArrayList<ParamType>();
     }
 
-    public void addParam(Param httpParam) {
+    public void addParam(ParamType httpParam) {
         params.add(httpParam);
     }
 
@@ -41,15 +42,21 @@ public class RouteBinding {
             return false;
         }
 
-        for (Param p : params) {
-            if (p.isOptional()) {
-                continue;
+        HashMap<String, String> requestParameters = request.getParameters();
+
+        for (ParamType p : params) {
+            if (requestParameters.get(p.getParam().value()) == null && !p.getParam().isOptional()) {
+                return false;
             }
-//            for (Param )
+
+            String name = p.getParam().value();
+            String value = requestParameters.get(p.getParam().value());
+            Class<?> type = p.getType();
+
+            if (!canParseValueWithType(value, type)) {
+                return false;
+            }
         }
-
-
-        request.getParameters();
 
         return true;
     }
@@ -68,6 +75,54 @@ public class RouteBinding {
 
     private Object[] bindParams(HttpRequest request) {
         return new Object[0];
+    }
+
+    private boolean canParseValueWithType(String value, Class<?> type) {
+        if (type.toString().equals(String.class.toString())) {
+            return true;
+        }
+
+        if (type.toString().equals(Integer.class.toString()) ||
+                type.toString().equals(int.class.toString())) {
+            try {
+                int _ = Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+            return true;
+        }
+
+        if (type.toString().equals(Double.class.toString()) ||
+                type.toString().equals(double.class.toString())) {
+            try {
+                double _ = Double.parseDouble(value);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+            return true;
+        }
+
+        if (type.toString().equals(Float.class.toString()) ||
+                type.toString().equals(float.class.toString())) {
+            try {
+                Float.parseFloat(value);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+            return true;
+        }
+
+        if (type.toString().equals(Boolean.class.toString()) ||
+                type.toString().equals(boolean.class.toString())) {
+            try {
+                Boolean.parseBoolean(value);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+            return true;
+        }
+
+        return false;
     }
 
 
