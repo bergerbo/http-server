@@ -12,7 +12,7 @@ import main.dar.server.annotation.WebHandler;
 public class PointMaster {
 
     @Route(method = HttpRequest.Method.GET, url = "/list")
-    public HttpResponse ListPoints(@Param("chocolat") String chocolat) {
+    public HttpResponse ListPoints() {
         System.out.println("return list");
         return null;
     }

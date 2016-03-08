@@ -36,22 +36,10 @@ class RequestHandler implements Runnable {
 
             RouteBinding binding = router.match(request);
             HttpResponse res = new HttpResponse("Internal Error", 500);
-            if(binding != null){
-                //TODO: fix it
-            String contentType;
-            if ((contentType = request.getHeader("Content-Type")) != null) {
-                switch (contentType) {
-                    case "text/plain":
-                        res = new HttpResponse(request.toText(), 200);
-                        break;
-                    case "text/html":
-                        res = new HttpResponse(request.toHtml(), 200);
-                        break;
-                    case "application/json":
-                        res = new HttpResponse(request.toJson(), 200);
-                        break;
-                }
-            }
+            if (binding != null) {
+                HttpResponse handlerResponse = binding.process(request);
+                if(handlerResponse != null)
+                    res = handlerResponse;
             }
 
             System.out.println(res.content());

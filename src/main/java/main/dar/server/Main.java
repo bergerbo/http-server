@@ -9,6 +9,6 @@ public class Main {
         System.out.println(int.class.toString());
 
 //        Router.getInstance();
-//        new Server(Router.getInstance()).startServer();
+        new Server(Router.getInstance()).startServer();
     }
 }
