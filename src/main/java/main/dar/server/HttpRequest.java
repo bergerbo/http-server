@@ -60,6 +60,8 @@ public class HttpRequest {
             req.setBody(body.toString());
         }
 
+        req.parseParameters();
+
         return req;
     }
 
@@ -67,6 +69,34 @@ public class HttpRequest {
     public HttpRequest() {
         headers = new HashMap<>();
         parameters = new HashMap<>();
+    }
+
+
+    private void parseParameters() {
+        String parametersString = null;
+
+
+        if(method == Method.POST){
+            parametersString = body;
+        } else {
+            String[] split = url.split("\\?");
+            if(split.length == 2){
+                url = split[0];
+                parametersString = split[1];
+            }
+        }
+
+        if(parametersString != null){
+            String[] kvps = parametersString.split("&");
+            for (String kvp: kvps) {
+                String[] pair = kvp.split("=");
+                if(pair.length != 2)
+                    continue;
+
+                parameters.put(pair[0],pair[1]);
+            }
+        }
+
     }
 
     public HashMap<String, String> getParameters() {
