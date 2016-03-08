@@ -14,18 +14,16 @@ import java.util.Map;
  */
 public class HttpRequest {
 
-    public HashMap<String, String> getParameters() {
-        return null;
-    }
 
     public enum Method {
-        GET, POST, PUT, CREATE
+        GET, POST, PUT, DELETE, CREATE
     }
 
     private Method method;
     private String url;
     private String protocol;
     private HashMap<String, String> headers;
+    private HashMap<String, String> parameters;
     private String body;
 
     public static HttpRequest parse(BufferedReader in) throws IOException, BadlyFormedHttpRequest {
@@ -68,6 +66,11 @@ public class HttpRequest {
 
     public HttpRequest() {
         headers = new HashMap<>();
+        parameters = new HashMap<>();
+    }
+
+    public HashMap<String, String> getParameters() {
+        return parameters;
     }
 
     public Method getMethod() {
