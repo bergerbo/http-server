@@ -74,7 +74,36 @@ public class RouteBinding {
     }
 
     private Object[] bindParams(HttpRequest request) {
-        return new Object[0];
+        Object [] result = new Object[params.size()];
+        for (int i = 0; i < params.size(); i ++) {
+            String val = request.getParameters().get(params.get(i).getParam().value());
+            if (val == null || params.get(i).isString()) {
+                result[i] = val;
+                continue;
+            }
+
+            if (params.get(i).isInteger()) {
+                result[i] = Integer.parseInt(val);
+                continue;
+            }
+
+            if (params.get(i).isDouble()) {
+                result[i] = Double.parseDouble(val);
+                continue;
+            }
+
+            if (params.get(i).isFloat()) {
+                result[i] = Float.parseFloat(val);
+                continue;
+            }
+
+            if (params.get(i).isBoolean()) {
+                result[i] = Boolean.parseBoolean(val);
+                continue;
+            }
+        }
+
+        return result;
     }
 
     private boolean canParseValueWithParamType(String value, ParamType type) {
