@@ -29,4 +29,48 @@ public class ParamType {
     public void setType(Class<?> type) {
         this.type = type;
     }
+
+    public boolean isString() {
+        if (type.toString().equals(String.class.toString())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isInteger() {
+        if (type.toString().equals(Integer.class.toString()) ||
+                type.toString().equals(int.class.toString())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isDouble() {
+        if (type.toString().equals(Double.class.toString()) ||
+                type.toString().equals(double.class.toString())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isFloat() {
+        if (type.toString().equals(Float.class.toString()) ||
+                type.toString().equals(float.class.toString())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isBoolean() {
+        if (type.toString().equals(Boolean.class.toString()) ||
+                type.toString().equals(boolean.class.toString())) {
+            return true;
+        }
+
+        return false;
+    }
 }
