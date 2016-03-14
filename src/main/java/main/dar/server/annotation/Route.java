@@ -1,6 +1,5 @@
 package main.dar.server.annotation;
 
-import jdk.nashorn.internal.ir.annotations.Reference;
 import main.dar.server.HttpRequest;
 
 import java.lang.annotation.ElementType;
@@ -15,5 +14,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Route {
     HttpRequest.Method method();
-    String url();
+    String urlPattern();
 }

@@ -3,15 +3,13 @@ package main.dar.server;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Set;
 
 import main.dar.server.annotation.Param;
 import main.dar.server.annotation.Route;
-import main.dar.server.annotation.Types.ParamType;
+import main.dar.server.Types.ParamType;
 import main.dar.server.annotation.WebHandler;
 import org.reflections.Reflections;
-import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
@@ -47,7 +45,7 @@ public class Router {
                     Route route;
                     if ((route = m.getDeclaredAnnotation(Route.class)) != null) {
 
-                        RouteBinding binding = new RouteBinding(handlerInstance, m, route.method(), route.url());
+                        RouteBinding binding = new RouteBinding(handlerInstance, m, route.method(), route.urlPattern());
 
                         for (Parameter p : m.getParameters()) {
                             Param httpParam;

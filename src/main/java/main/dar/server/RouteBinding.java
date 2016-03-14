@@ -1,8 +1,6 @@
 package main.dar.server;
 
-import main.dar.server.annotation.Param;
-import main.dar.server.annotation.Types.ParamType;
-import main.dar.server.annotation.WebHandler;
+import main.dar.server.Types.ParamType;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,19 +11,19 @@ import java.util.HashMap;
  * Created by iShavgula on 01/03/16.
  */
 public class RouteBinding {
-    private  String url;
+    private  String urlPattern;
     private HttpRequest.Method httpMethod;
     private ArrayList<ParamType> params;
 
     private Object handler;
     private Method method;
 
-    public RouteBinding(Object handler, Method method, HttpRequest.Method httpMethod, String url) {
+    public RouteBinding(Object handler, Method method, HttpRequest.Method httpMethod, String urlRegex) {
         this.handler = handler;
         this.method = method;
 
         this.httpMethod = httpMethod;
-        this.url = url;
+        this.urlPattern = urlPattern;
         params = new ArrayList<ParamType>();
     }
 
@@ -38,7 +36,7 @@ public class RouteBinding {
             return false;
         }
 
-        if (!request.getUrl().toLowerCase().equals(url.toLowerCase())) {
+        if (!request.getUrl().toLowerCase().matches(urlPattern.toLowerCase())) {
             return false;
         }
 
@@ -101,6 +99,8 @@ public class RouteBinding {
                 result[i] = Boolean.parseBoolean(val);
                 continue;
             }
+
+            return null;
         }
 
         return result;

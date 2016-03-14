@@ -1,4 +1,4 @@
-package main.dar.server.annotation.Types;
+package main.dar.server.Types;
 
 import main.dar.server.annotation.Param;
 
