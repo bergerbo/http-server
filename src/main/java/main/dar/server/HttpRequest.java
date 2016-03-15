@@ -6,6 +6,7 @@ import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.CharBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public class HttpRequest {
 
 
         String headerLine;
-        while (!(headerLine = in.readLine()).isEmpty() && headerLine != null) {
+        while (!(headerLine = in.readLine()).isEmpty()) {
             System.out.println(headerLine);
             String[] parsedHeader = headerLine.split(": ");
             req.addHeader(parsedHeader[0], parsedHeader[1]);
@@ -60,14 +61,11 @@ public class HttpRequest {
 
         StringBuffer body = new StringBuffer();
 
-        String bodyLine;
-        if (in.ready()) {
-            while (!(bodyLine = in.readLine()).isEmpty() && bodyLine != null) {
-                body.append(bodyLine);
-                System.out.println("bodyline :" + bodyLine);
-            }
-            req.setBody(body.toString());
+        while (in.ready()) {
+            char read = (char) in.read();
+            body.append(read);
         }
+        req.setBody(body.toString());
 
         req.parseParameters();
 
@@ -78,31 +76,31 @@ public class HttpRequest {
     public HttpRequest() {
         headers = new HashMap<>();
         parameters = new HashMap<>();
+        urlParameters = new HashMap<>();
     }
 
 
     private void parseParameters() {
         String parametersString = null;
 
-
-        if(method == Method.POST){
+        if (method == Method.POST) {
             parametersString = body;
         } else {
             String[] split = url.split("\\?");
-            if(split.length == 2){
+            if (split.length == 2) {
                 url = split[0];
                 parametersString = split[1];
             }
         }
 
-        if(parametersString != null){
+        if (parametersString != null) {
             String[] kvps = parametersString.split("&");
-            for (String kvp: kvps) {
+            for (String kvp : kvps) {
                 String[] pair = kvp.split("=");
-                if(pair.length != 2)
+                if (pair.length != 2)
                     continue;
 
-                parameters.put(pair[0],pair[1]);
+                parameters.put(pair[0], pair[1]);
             }
         }
 

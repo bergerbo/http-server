@@ -17,6 +17,7 @@ public class HttpResponse {
         this.statusCode = statusCode;
     }
 
+
     private String statusCodeMessage() {
         if (200 >= statusCode && statusCode < 300) {
             return "OK";
