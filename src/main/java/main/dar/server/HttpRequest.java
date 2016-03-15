@@ -15,6 +15,14 @@ import java.util.Map;
 public class HttpRequest {
 
 
+    public HashMap<String, String> getUrlParameters() {
+        return urlParameters;
+    }
+
+    public void setUrlParameters(HashMap<String, String> urlParameters) {
+        this.urlParameters = urlParameters;
+    }
+
     public enum Method {
         GET, POST, PUT, DELETE, CREATE
     }
@@ -24,11 +32,12 @@ public class HttpRequest {
     private String protocol;
     private HashMap<String, String> headers;
     private HashMap<String, String> parameters;
+    private HashMap<String, String> urlParameters;
     private String body;
 
     public static HttpRequest parse(BufferedReader in) throws IOException, BadlyFormedHttpRequest {
         String methodLine = in.readLine();
-        System.out.println(methodLine);
+//        System.out.println(methodLine);
 
         String[] request = methodLine.split(" ");
 

@@ -10,4 +10,5 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Param {
     String value();
     boolean isOptional() default false;
+    boolean isUrlParam() default false;
 }

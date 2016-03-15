@@ -18,7 +18,7 @@ public class RouteBinding {
     private Object handler;
     private Method method;
 
-    public RouteBinding(Object handler, Method method, HttpRequest.Method httpMethod, String urlRegex) {
+    public RouteBinding(Object handler, Method method, HttpRequest.Method httpMethod, String urlPattern) {
         this.handler = handler;
         this.method = method;
 
@@ -36,13 +36,18 @@ public class RouteBinding {
             return false;
         }
 
-        if (!request.getUrl().toLowerCase().matches(urlPattern.toLowerCase())) {
+        if (!canMatchUrl(urlPattern, request)) {
             return false;
         }
+
+//        if (!request.getUrl().toLowerCase().matches(urlPattern.toLowerCase())) {
+//            return false;
+//        }
 
         HashMap<String, String> requestParameters = request.getParameters();
 
         for (ParamType p : params) {
+            if (p.getParam().isUrlParam()) continue;
             if (requestParameters.get(p.getParam().value()) == null && !p.getParam().isOptional()) {
                 return false;
             }
@@ -74,6 +79,8 @@ public class RouteBinding {
     private Object[] bindParams(HttpRequest request) {
         Object [] result = new Object[params.size()];
         for (int i = 0; i < params.size(); i ++) {
+            HashMap<String, String> requestParameters = request.getParameters();
+            requestParameters.putAll(request.getUrlParameters());
             String val = request.getParameters().get(params.get(i).getParam().value());
             if (val == null || params.get(i).isString()) {
                 result[i] = val;
@@ -106,7 +113,50 @@ public class RouteBinding {
         return result;
     }
 
+    private boolean canMatchUrl(String urlPattern, HttpRequest request) {
+        String[] urlPatternSegments = urlPattern.split("/");
+        String[] requestUrlSegments = request.getUrl().split("/");
+
+        if (urlPatternSegments.length != requestUrlSegments.length) {
+            return false;
+        }
+
+        for (int i = 0; i < urlPatternSegments.length; i ++) {
+            if (urlPatternSegments[i].toLowerCase().equals(requestUrlSegments[i].toLowerCase())) {
+                continue;
+            } else if (!urlPatternSegments[i].startsWith("$")) {
+                return false;
+            }
+
+            String paramName = urlPatternSegments[i].substring(1).toLowerCase();
+
+            for (ParamType p : params) {
+                if (!p.getParam().isUrlParam()) continue;
+                if (p.getParam().value().toLowerCase().equals(paramName)) {
+                    if (!canParseValueWithParamType(requestUrlSegments[i], p)) {
+                        return false;
+                    } else {
+                        if (request.getUrlParameters() == null) {
+                            request.setUrlParameters(new HashMap<>());
+                        }
+                        request.getUrlParameters().put(paramName, requestUrlSegments[i]);
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
     private boolean canParseValueWithParamType(String value, ParamType type) {
+        if (value == null && type.getParam().isOptional()) {
+            return true;
+        } else {
+            if (value == null) {
+                return false;
+            }
+        }
+
         if (type.isString()) {
             return true;
         }

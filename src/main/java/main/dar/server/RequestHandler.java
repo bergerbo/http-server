@@ -42,7 +42,7 @@ class RequestHandler implements Runnable {
                     res = handlerResponse;
             }
 
-            System.out.println(res.content());
+//            System.out.println(res.content());
 
             bufferedWriter.write(res.content());
             bufferedWriter.flush();
