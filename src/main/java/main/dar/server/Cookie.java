@@ -8,57 +8,52 @@ import java.util.Date;
 public class Cookie {
     private String name;
     private String userAgent;
-    private Date expirationDate;
-    private String value;
+    private String host;
+//    private Date expirationDate;
+//    private String value;
 
-    public Cookie(String name, String userAgent, Date expirationDate) {
+    public Cookie(String name, HttpRequest request) {//, Date expirationDate) {
         this.name = name;
-        this.userAgent = userAgent;
-        this.expirationDate = expirationDate;
-        this.value = "-1";
-    }
-
-    public String hashValue() {
-        // This could be more complex
-        return ("[name]:" + name + "[value]:" + value + "[expirationDate]:" + expirationDate.toString()).hashCode() + "";
+        this.userAgent = request.getHeader("User-Agent");
+        this.host = request.getHeader("Host");
+//        this.expirationDate = expirationDate;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String hashValue() {
+        // This could be more complex
+        return ("[name]:" + name + "[userAgent]:" + userAgent+ "[host]:" + host).hashCode() + "";
     }
 
-    public String getUserAgent() {
-        return userAgent;
+    public boolean isValid(String hashValue) {
+        return hashValue.equals(hashValue());
     }
 
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
 
-    public Date getExpirationDate() {
-        return expirationDate;
-    }
+//    public Date getExpirationDate() {
+//        return expirationDate;
+//    }
 
-    public void setExpirationDate(Date expirationDate) {
-        this.expirationDate = expirationDate;
-    }
+//    public void setExpirationDate(Date expirationDate) {
+//        this.expirationDate = expirationDate;
+//    }
 
-    public String getValue() {
-        return value;
-    }
+//    public String getValue() {
+//        return value;
+//    }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+//    public void setValue(String value) {
+//        this.value = value;
+//    }
 
-    public boolean equals(Cookie cookie) {
-        return name.equals(cookie.getName()) &&
-                userAgent.equals(cookie.getUserAgent()) &&
-                expirationDate.equals(cookie.expirationDate) &&
-                value == cookie.value;
-    }
+//    public boolean equals(Cookie cookie) {
+//        return name.equals(cookie.getName()) &&
+//                userAgent.equals(cookie.getUserAgent()) &&
+//                ip.equals(cookie.getIp()) &&
+//                expirationDate.equals(cookie.expirationDate) &&
+//                value == cookie.value;
+//   }
 }

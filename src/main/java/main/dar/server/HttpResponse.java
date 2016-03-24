@@ -1,8 +1,5 @@
 package main.dar.server;
 
-import main.dar.server.Types.ServiceType;
-
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -15,13 +12,11 @@ public class HttpResponse {
     private String body;
     private int statusCode;
     private HashMap<String, String> headers;
-    private HashSet<ServiceType> services;
 
     public HttpResponse() {
         this.body = "Internal error";
         statusCode = 500;
         headers = new HashMap<>();
-        services = new HashSet<>();
     }
 
     public HttpResponse(String body, int statusCode) {
@@ -56,6 +51,10 @@ public class HttpResponse {
         headers.put(key, value);
     }
 
+    public void addCookie(Cookie c) {
+        headers.put("Set-Cookie", c.getName() + "=" + c.hashValue());
+    }
+
 
     private String statusCodeMessage() {
         if (200 >= statusCode && statusCode < 300) {
@@ -83,13 +82,5 @@ public class HttpResponse {
 
     public String content() {
         return headers() + body;
-    }
-
-    public HashSet<ServiceType> getServices() {
-        return services;
-    }
-
-    public void addService(ServiceType serviceType) {
-        services.add(serviceType);
     }
 }

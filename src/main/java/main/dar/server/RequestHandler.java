@@ -1,12 +1,9 @@
 package main.dar.server;
 
-import main.dar.server.Types.ServiceType;
 import main.dar.server.exception.BadlyFormedHttpRequest;
 
 import java.io.*;
-import java.net.NoRouteToHostException;
 import java.net.Socket;
-import java.text.ParseException;
 import java.util.Map;
 
 /**
@@ -35,9 +32,10 @@ class RequestHandler implements Runnable {
             System.out.println("Got a client !");
 
             HttpRequest request = HttpRequest.parse(bufferedReader);
-//            for (Map.Entry<String, String> c : request.getCookies().entrySet()) {
-//                System.out.println(c.getKey() + " " + c.getValue());
-//            }
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            for (Map.Entry<String, String> c : request.getCookies().entrySet()) {
+                System.out.println(c.getKey() + " " + c.getValue());
+            }
             HttpResponse res = new HttpResponse();
 
             RouteBinding binding = router.match(request);
@@ -47,7 +45,9 @@ class RequestHandler implements Runnable {
                     res = handlerResponse;
             }
 
-//            SessionManager.process(request, res, ServiceType.Authentification);
+//            Cookie c = new Cookie("auth", request);
+//            res.addHeader("Set-Cookie", "auth" + "=" + c.hashValue());
+//            SessionManager.getInstance().addCookie(c);
 
             res.setStatusCode(200);
             System.out.println(res.content());

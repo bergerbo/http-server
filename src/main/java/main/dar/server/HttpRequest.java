@@ -58,7 +58,7 @@ public class HttpRequest {
             System.out.println(headerLine);
             String[] parsedHeader = headerLine.split(": ");
             if (parsedHeader[0].equals("Cookie")) {
-                String [] parsedCookies = parsedHeader[1].split(";");
+                String [] parsedCookies = parsedHeader[1].split("; ");
                 for (String c : parsedCookies) {
                     if (!c.equals("")) {
                         String[] parsedCookie = c.split("=");

@@ -1,43 +1,45 @@
 package main.dar.server;
 
-import main.dar.server.Types.ServiceType;
-import main.dar.server.exception.BadlyFormedHttpRequest;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Created by iShavgula on 15/03/16.
  */
 public class SessionManager {
-    private static int expirationTime = 100000;
+//    private static int expirationTime = 100000;
 
     private static SessionManager ourInstance = new SessionManager();
     public static SessionManager getInstance() {
         return ourInstance;
     }
 
-    private HashMap<String, Cookie> cookies;
-
     private SessionManager() {
-        cookies = new HashMap<>();
+
     }
 
-    public void addCookie(Cookie cookie) {
-        if (cookies.containsKey(cookie.hashCode())) {
-            return;
+    private boolean isCookieValid(Cookie cookie, HashMap<String, String> cookies) {
+        for (Map.Entry<String, String> entry : cookies.entrySet()) {
+            if (entry.getKey().equals(cookie.getName()) && entry.getValue().equals(cookie.hashValue())) {
+                return true;
+            }
         }
 
-        cookies.put(cookie.hashValue(), cookie);
+        return false;
     }
 
-    public boolean haveCookie(Cookie cookie) {
-        return cookie.equals(cookies.get(cookie.hashValue()));
+    public boolean areCookiesValid(ArrayList<String> requiredCookieNames, HttpRequest request) {
+        for (String name : requiredCookieNames) {
+            Cookie c = new Cookie(name, request);
+            if (!isCookieValid(c, request.getCookies())) {
+                return false;
+            }
+        }
+        return true;
     }
+
 /*
     static public void process(HttpRequest request, HttpResponse response, HashSet<ServiceType> services) throws BadlyFormedHttpRequest, ParseException {
         for (ServiceType service : services) {

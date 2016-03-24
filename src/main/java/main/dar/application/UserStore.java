@@ -1,11 +1,14 @@
 package main.dar.application;
 
+import main.dar.server.Cookie;
 import main.dar.server.HttpRequest;
 import main.dar.server.HttpResponse;
+import main.dar.server.SessionManager;
 import main.dar.server.annotation.Param;
 import main.dar.server.annotation.Route;
 import main.dar.server.annotation.WebHandler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -42,7 +45,8 @@ public class UserStore {
     }
 
     @Route(method = HttpRequest.Method.POST, urlPattern = "/register")
-    public HttpResponse register(@Param("name") String name,
+    public HttpResponse register(HttpRequest request,
+                                 @Param("name") String name,
                                  @Param("password") String password,
                                  @Param("description") String description) {
         if (userExists(name.toLowerCase())) {
@@ -50,8 +54,26 @@ public class UserStore {
         }
         addUser(new User(name, password, description));
         HttpResponse res = new HttpResponse("Successfully created an user", 200);
+        Cookie c = new Cookie("auth", request);
+        res.addCookie(c);
 
-        return null;
+        return res;
+    }
+
+    @Route(method = HttpRequest.Method.GET, urlPattern = "/description")
+    public HttpResponse description(HttpRequest request) {
+        ArrayList<String> requiredCookies = new ArrayList<String>(){{
+            add("auth");
+        }};
+
+        if (!SessionManager.getInstance().areCookiesValid(requiredCookies, request)) {
+            HttpResponse res =new HttpResponse("auth cookie wasn't found!", 403);
+            Cookie c = new Cookie("auth", request);
+            res.addHeader("Set-Cookie", "auth" + "=" + c.hashValue());
+            return res;
+        }
+        
+        return new HttpResponse("Yo, desc is here!", 200);
     }
 
 }

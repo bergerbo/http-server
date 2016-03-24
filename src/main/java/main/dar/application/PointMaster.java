@@ -19,7 +19,7 @@ public class PointMaster {
     Integer id = 0;
 
     @Route(method = HttpRequest.Method.GET, urlPattern = "/list")
-    public HttpResponse ListPoints() {
+    public HttpResponse ListPoints(HttpRequest request) {
         StringBuilder body = new StringBuilder();
 
         for (Map.Entry kvp : points.entrySet()) {
@@ -42,7 +42,8 @@ public class PointMaster {
     }
 
     @Route(method = HttpRequest.Method.GET, urlPattern = "/p/$id/x")
-    public HttpResponse GetPointX(@Param(value = "id", isUrlParam = true) String id) {
+    public HttpResponse GetPointX(HttpRequest request,
+                                  @Param(value = "id", isUrlParam = true) String id) {
         if (points.containsKey(id)) {
             Point p = points.get(id);
             HttpResponse res = new HttpResponse(""+p.x, 200);
@@ -53,10 +54,12 @@ public class PointMaster {
 
 
     @Route(method = HttpRequest.Method.GET, urlPattern = "/p/$id/y")
-    public HttpResponse GetPointY(@Param(value = "id", isUrlParam = true) String id) {
+    public HttpResponse GetPointY(HttpRequest request,
+                                  @Param(value = "id", isUrlParam = true) String id) {
         if (points.containsKey(id)) {
             Point p = points.get(id);
             HttpResponse res = new HttpResponse(""+p.y, 200);
+
             return res;
         }
         return new HttpResponse("No point found", 404);
@@ -64,17 +67,28 @@ public class PointMaster {
 
 
     @Route(method = HttpRequest.Method.PUT, urlPattern = "/p/$id")
-    public HttpResponse UdpatePoint(
-            @Param(value = "x", isOptional = true) Integer x,
+    public HttpResponse UdpatePoint(HttpRequest request,
             @Param(value = "id", isUrlParam = true) String id,
+            @Param(value = "x", isOptional = true) Integer x,
             @Param(value = "y", isOptional = true) Integer y) {
         System.out.println("update for " + id + "with x : " + x + "y : " + y);
-        points.put(id,new Point(x,y));
-        return new HttpResponse("",200);
+        if (points.get(id) == null) {
+            return new HttpResponse("Id not found", 401);
+        }
+        Point p = points.get(id);
+        if (x != null) {
+            p.x = x;
+        }
+        if (y != null) {
+            p.y = y;
+        }
+        points.put(id, p);
+        return new HttpResponse("Update successful",200);
     }
 
     @Route(method = HttpRequest.Method.POST, urlPattern = "/p")
-    public HttpResponse CreatePoint(@Param(value = "x") Integer x,
+    public HttpResponse CreatePoint(HttpRequest request,
+                                    @Param(value = "x") Integer x,
                                     @Param(value = "y") Integer y) {
         System.out.println("create with x : " + x + "y : " + y);
 
@@ -85,7 +99,8 @@ public class PointMaster {
     }
 
     @Route(method = HttpRequest.Method.DELETE, urlPattern = "/p/$id")
-    public HttpResponse DeletePoint(@Param(value = "id", isUrlParam = true) String id) {
+    public HttpResponse DeletePoint(HttpRequest request,
+                                    @Param(value = "id", isUrlParam = true) String id) {
         points.remove(id);
         return new HttpResponse("",200);
     }

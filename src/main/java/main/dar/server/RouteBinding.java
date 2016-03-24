@@ -21,6 +21,7 @@ public class RouteBinding {
     public RouteBinding(Object handler, Method method, HttpRequest.Method httpMethod, String urlPattern) {
         this.handler = handler;
         this.method = method;
+//        this.requiredCookies = new String[0];
 
         this.httpMethod = httpMethod;
         this.urlPattern = urlPattern;
@@ -77,33 +78,36 @@ public class RouteBinding {
     }
 
     private Object[] bindParams(HttpRequest request) {
-        Object [] result = new Object[params.size()];
+        Object [] result = new Object[params.size() + 1];
+
+        result[0] = request;
+
         for (int i = 0; i < params.size(); i ++) {
             HashMap<String, String> requestParameters = request.getParameters();
             requestParameters.putAll(request.getUrlParameters());
             String val = request.getParameters().get(params.get(i).getParam().value());
             if (val == null || params.get(i).isString()) {
-                result[i] = val;
+                result[i + 1] = val;
                 continue;
             }
 
             if (params.get(i).isInteger()) {
-                result[i] = Integer.parseInt(val);
+                result[i + 1] = Integer.parseInt(val);
                 continue;
             }
 
             if (params.get(i).isDouble()) {
-                result[i] = Double.parseDouble(val);
+                result[i + 1] = Double.parseDouble(val);
                 continue;
             }
 
             if (params.get(i).isFloat()) {
-                result[i] = Float.parseFloat(val);
+                result[i + 1] = Float.parseFloat(val);
                 continue;
             }
 
             if (params.get(i).isBoolean()) {
-                result[i] = Boolean.parseBoolean(val);
+                result[i + 1] = Boolean.parseBoolean(val);
                 continue;
             }
 
