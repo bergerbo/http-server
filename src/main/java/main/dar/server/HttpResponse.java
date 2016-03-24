@@ -1,7 +1,11 @@
 package main.dar.server;
 
+import main.dar.server.Types.ServiceType;
+
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Created by hoboris on 2/16/16.
@@ -10,11 +14,46 @@ public class HttpResponse {
 
     private String body;
     private int statusCode;
+    private HashMap<String, String> headers;
+    private HashSet<ServiceType> services;
 
+    public HttpResponse() {
+        this.body = "Internal error";
+        statusCode = 500;
+        headers = new HashMap<>();
+        services = new HashSet<>();
+    }
 
     public HttpResponse(String body, int statusCode) {
         this.body = body;
         this.statusCode = statusCode;
+        headers = new HashMap<>();
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    private String getStartingHeaders() {
+        return "HTTP/1.1 " + Integer.toString(statusCode) + " " + statusCodeMessage() + "\r\n" +
+                "Content-Type: text/html\r\n" +
+                "Content-Length: " + body.length() + "\r\n";
+    }
+
+    public void addHeader(String key, String value) {
+        headers.put(key, value);
     }
 
     private String statusCodeMessage() {
@@ -31,12 +70,25 @@ public class HttpResponse {
     }
 
     private String headers() {
-        return "HTTP/1.1 " + Integer.toString(statusCode) + " " + statusCodeMessage() + "\r\n" +
-                "Content-Type: text/html\r\n" +
-                "Content-Length: " + body.length() + "\r\n\r\n";
+        String res = getStartingHeaders();
+        for (Map.Entry header : headers.entrySet()) {
+            res += header.getKey() + ": " + header.getValue() + "\r\n";
+        }
+
+        res += "\r\n";
+
+        return res;
     }
 
     public String content() {
         return headers() + body;
+    }
+
+    public HashSet<ServiceType> getServices() {
+        return services;
+    }
+
+    public void addService(ServiceType serviceType) {
+        services.add(serviceType);
     }
 }

@@ -114,6 +114,8 @@ public class RouteBinding {
     }
 
     private boolean canMatchUrl(String urlPattern, HttpRequest request) {
+        request.setUrlParameters(new HashMap<>());
+
         String[] urlPatternSegments = urlPattern.split("/");
         String[] requestUrlSegments = request.getUrl().split("/");
 
@@ -136,9 +138,6 @@ public class RouteBinding {
                     if (!canParseValueWithParamType(requestUrlSegments[i], p)) {
                         return false;
                     } else {
-                        if (request.getUrlParameters() == null) {
-                            request.setUrlParameters(new HashMap<>());
-                        }
                         request.getUrlParameters().put(paramName, requestUrlSegments[i]);
                     }
                 }

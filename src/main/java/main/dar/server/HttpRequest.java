@@ -7,6 +7,7 @@ import javax.json.JsonObjectBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -31,6 +32,7 @@ public class HttpRequest {
     private String url;
     private String protocol;
     private HashMap<String, String> headers;
+    private HashMap<String, String> cookies;
     private HashMap<String, String> parameters;
     private HashMap<String, String> urlParameters;
     private String body;
@@ -54,21 +56,27 @@ public class HttpRequest {
         while (!(headerLine = in.readLine()).isEmpty() && headerLine != null) {
             System.out.println(headerLine);
             String[] parsedHeader = headerLine.split(": ");
-            req.addHeader(parsedHeader[0], parsedHeader[1]);
+            if (parsedHeader[0].equals("Cookie")) {
+                String [] parsedCookies = parsedHeader[1].split(";");
+                for (String c : parsedCookies) {
+                    if (!c.equals("")) {
+                        String[] parsedCookie = c.split("=");
+                        req.addCookie(parsedCookie[0], parsedCookie[1]);
+                    }
+                }
+            } else {
+                req.addHeader(parsedHeader[0], parsedHeader[1]);
+            }
             System.out.println("header :" + parsedHeader[0] + " : " + parsedHeader[1]);
         }
 
         StringBuffer body = new StringBuffer();
 
-        String bodyLine;
-        if (in.ready()) {
-            while (!(bodyLine = in.readLine()).isEmpty() && bodyLine != null) {
-                body.append(bodyLine);
-                System.out.println("bodyline :" + bodyLine);
-            }
-            req.setBody(body.toString());
+        while (in.ready()) {
+            char c = (char) in.read();
+            body.append(c);
         }
-
+        req.setBody(body.toString());
         req.parseParameters();
 
         return req;
@@ -78,6 +86,8 @@ public class HttpRequest {
     public HttpRequest() {
         headers = new HashMap<>();
         parameters = new HashMap<>();
+        urlParameters = new HashMap<>() ;
+        cookies = new HashMap<>();
     }
 
 
@@ -126,6 +136,14 @@ public class HttpRequest {
 
     public String getHeader(String header) {
         return headers.get(header);
+    }
+
+    public HashMap<String, String> getCookies() {
+        return cookies;
+    }
+
+    public void addCookie(String name, String value) {
+        cookies.put(name, value);
     }
 
 
