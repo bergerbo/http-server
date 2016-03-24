@@ -1,23 +1,54 @@
 package main.dar.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by iShavgula on 15/03/16.
  */
 public class SessionManager {
-//    private static int expirationTime = 100000;
+    private static int expirationTime = 600000;
 
     private static SessionManager ourInstance = new SessionManager();
     public static SessionManager getInstance() {
         return ourInstance;
     }
 
-    private SessionManager() {
+    private HashMap<String, Object> sessions;
+    private HashMap<String, Date> dateExpiration;
 
+    private SessionManager() {
+        sessions = new HashMap<>();
+        dateExpiration = new HashMap<>();
+    }
+
+    static public String getSessionIdForRequest(HttpRequest request) {
+        String host = request.getHeader("Host");
+        String userAgent = request.getHeader("User-Agent");
+        return ("[host]:" + host + "[user-agent]:" + userAgent).hashCode() + "";
+    }
+
+    public void addSession(String id, Object sessionInfo) {
+        sessions.put(id, sessionInfo);
+
+        Date d = new Date();
+        d.setTime(d.getTime() + expirationTime);
+
+        dateExpiration.put(id, d);
+        sessions.put(id, sessionInfo);
+    }
+
+    public Object getSessionInfo(String id) {
+        if (dateExpiration.get(id).before(new Date())) {
+            sessions.remove(id);
+            dateExpiration.remove(id);
+            return null;
+        }
+
+        dateExpiration.get(id).setTime(dateExpiration.get(id).getTime() + expirationTime);
+
+        return sessions.get(id);
     }
 
     private boolean isCookieValid(Cookie cookie, HashMap<String, String> cookies) {
@@ -39,28 +70,4 @@ public class SessionManager {
         }
         return true;
     }
-
-/*
-    static public void process(HttpRequest request, HttpResponse response, HashSet<ServiceType> services) throws BadlyFormedHttpRequest, ParseException {
-        for (ServiceType service : services) {
-            if (request.getHeader("Cookie") == null) {
-                String userAgent = request.getHeader("User-Agent");
-                if (userAgent == null) throw new BadlyFormedHttpRequest();
-
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-                String dateInString = "22-01-2015 10:20:56";
-                Date date = sdf.parse(dateInString);
-                Date expirationDate = new Date(date.getTime() + expirationTime);
-
-                Cookie cookie = new Cookie(serviceType.serviceName(), userAgent, expirationDate);
-                cookie.setValue(cookie.hashValue());
-
-                response.addHeader("Set-Cookie", cookie.getName() + "=\"" + cookie.getValue() + "\"");
-            }
-        }
-//        else {
-//            response.addHeader("Cookie", request.getHeader("Cookie"));
-//        }
-    }*/
-
 }

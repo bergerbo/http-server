@@ -1,4 +1,4 @@
-package main.dar.application;
+package main.dar.application.Users;
 
 /**
  * Created by iShavgula on 24/03/16.

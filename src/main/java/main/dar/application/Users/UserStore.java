@@ -1,4 +1,4 @@
-package main.dar.application;
+package main.dar.application.Users;
 
 import main.dar.server.Cookie;
 import main.dar.server.HttpRequest;
@@ -57,6 +57,9 @@ public class UserStore {
         Cookie c = new Cookie("auth", request);
         res.addCookie(c);
 
+        String sessionId = SessionManager.getSessionIdForRequest(request);
+        SessionManager.getInstance().addSession(sessionId, new UserSession(name));
+
         return res;
     }
 
@@ -68,12 +71,21 @@ public class UserStore {
 
         if (!SessionManager.getInstance().areCookiesValid(requiredCookies, request)) {
             HttpResponse res =new HttpResponse("auth cookie wasn't found!", 403);
-            Cookie c = new Cookie("auth", request);
-            res.addHeader("Set-Cookie", "auth" + "=" + c.hashValue());
             return res;
         }
-        
-        return new HttpResponse("Yo, desc is here!", 200);
+
+        String sessionId = SessionManager.getSessionIdForRequest(request);
+        UserSession userSession = (UserSession)SessionManager.getInstance().getSessionInfo(sessionId);
+        if (userSession == null) {
+            return new HttpResponse("Session is closed", 401);
+        }
+
+        User user = users.get(userSession.getName());
+        if (user == null) {
+            return new HttpResponse("Something went wrong, user info wasn't found", 404);
+        }
+
+        return new HttpResponse(user.getDescription(), 200);
     }
 
 }
