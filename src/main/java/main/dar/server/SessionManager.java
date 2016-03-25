@@ -8,7 +8,7 @@ import java.util.*;
  * Created by iShavgula on 15/03/16.
  */
 public class SessionManager {
-    private static int expirationTime = 600000;
+    private static int expirationTime = 10000;
 
     private static SessionManager ourInstance = new SessionManager();
     public static SessionManager getInstance() {
@@ -40,13 +40,14 @@ public class SessionManager {
     }
 
     public Object getSessionInfo(String id) {
+        if (dateExpiration.get(id) == null) return null;
         if (dateExpiration.get(id).before(new Date())) {
             sessions.remove(id);
             dateExpiration.remove(id);
             return null;
         }
 
-        dateExpiration.get(id).setTime(dateExpiration.get(id).getTime() + expirationTime);
+        dateExpiration.get(id).setTime((new Date()).getTime() + expirationTime);
 
         return sessions.get(id);
     }
