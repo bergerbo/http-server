@@ -26,7 +26,12 @@ public class TemplateTester {
         String body = null;
         try {
             JsonObjectBuilder job = Json.createObjectBuilder();
-            job.add("chocolate","INSANE");
+            JsonObjectBuilder chocolate = Json.createObjectBuilder();
+
+            chocolate.add("taste","GOOOD");
+            chocolate.add("enough",false);
+            chocolate.add("love",true);
+            job.add("chocolate",chocolate);
             job.add("nomnom",true);
             job.add("enjoy",false);
             body = TemplateProcessor.process("test.html", job.build());

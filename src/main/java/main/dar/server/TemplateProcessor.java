@@ -6,9 +6,7 @@ import javax.json.JsonObject;
 import javax.json.JsonValue;
 import javax.swing.*;
 import javax.swing.text.html.HTMLDocument;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 
 /**
@@ -18,6 +16,10 @@ public class TemplateProcessor {
 
     public static String process(String filename, JsonObject env) throws IOException {
         FileReader f = new FileReader(filename);
+        return process(f,env);
+    }
+
+    private static String process(Reader f, JsonObject env) throws IOException {
         StringBuilder out = new StringBuilder();
         StringBuilder exp = new StringBuilder();
         boolean inExpr = false;
@@ -47,9 +49,10 @@ public class TemplateProcessor {
 
         }
         return out.toString();
+
     }
 
-    private static String eval(String expression, JsonObject env) {
+    private static String eval(String expression, JsonObject env) throws IOException {
         char c = expression.charAt(0);
         int index;
         String var;
@@ -62,7 +65,7 @@ public class TemplateProcessor {
                 else
                     var = expression.substring(1);
 
-                val = env.get(var);
+                val = resolve(var,env);
                 if (val != null)
                     return display(val);
                 break;
@@ -73,10 +76,12 @@ public class TemplateProcessor {
                 if (index > 1) {
                     var = expression.substring(1, index).trim();
                     output = expression.substring(index + 2);
-                    val = env.get(var);
+                    val = resolve(var,env);
                     JsonValue.ValueType cond = c == '?' ? JsonValue.ValueType.TRUE : JsonValue.ValueType.FALSE;
                     if (val != null && val.getValueType() == cond) {
-                        return output;
+                        String unEscaped = output.replace("{-","{").replace("}-","}");
+                        StringReader reader = new StringReader(unEscaped);
+                        return process(reader,env);
                     } else
                         return "";
                 }
@@ -84,6 +89,25 @@ public class TemplateProcessor {
 
         }
         return "EVAL";
+    }
+
+    private static JsonValue resolve(String variable, JsonObject env){
+        JsonObject scope = env;
+        String[] parts = variable.split("\\.");
+        if(parts.length >0 ){
+
+        for (int i =0;i<parts.length-1;i++){
+            JsonValue val = scope.get(parts[i]);
+            if(val.getValueType() == JsonValue.ValueType.OBJECT){
+                scope = (JsonObject) val;
+            } else
+                return JsonValue.NULL;
+        }
+
+        return scope.get(parts[parts.length-1]);
+        } else {
+            return scope.get(variable);
+        }
     }
 
     private static String display(JsonValue val) {

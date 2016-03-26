@@ -9,21 +9,21 @@
 <h1> HELLO LATENESS MY OLD FRIEND</h1>
 
 <div>
-    {{ $chocolate }}
+    {{ $chocolate.taste }}
 </div>
 <div>
     Chocolate
 </div>
 <div>
-    {{ ?nomnom =>
+    {{ ?chocolate.love =>
     <div>
-        Super Chocolate
+        Super Chocolate tastes {-{ $chocolate.taste  }-}
     </div>
     }}
 </div>
 <div>
-    {{ !enjoy =>
-        Raw power of death metal
+    {{ !chocolate.enough =>
+        More choco plz
     }}
 </div>
 
