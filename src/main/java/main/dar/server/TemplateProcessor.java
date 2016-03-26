@@ -1,13 +1,16 @@
 package main.dar.server;
 
+import jdk.nashorn.internal.ir.debug.JSONWriter;
 import jdk.nashorn.internal.runtime.JSONFunctions;
+import org.glassfish.json.JsonPrettyGeneratorImpl;
 
-import javax.json.JsonObject;
-import javax.json.JsonValue;
+import javax.json.*;
 import javax.swing.*;
 import javax.swing.text.html.HTMLDocument;
 import java.io.*;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Created by hoboris on 3/25/16.
@@ -16,7 +19,7 @@ public class TemplateProcessor {
 
     public static String process(String filename, JsonObject env) throws IOException {
         FileReader f = new FileReader(filename);
-        return process(f,env);
+        return process(f, env);
     }
 
     private static String process(Reader f, JsonObject env) throws IOException {
@@ -57,6 +60,7 @@ public class TemplateProcessor {
         int index;
         String var;
         JsonValue val;
+        String output;
         switch (c) {
             case '$':
                 index = expression.indexOf(" ");
@@ -65,46 +69,69 @@ public class TemplateProcessor {
                 else
                     var = expression.substring(1);
 
-                val = resolve(var,env);
+                val = resolve(var, env);
                 if (val != null)
                     return display(val);
                 break;
             case '?':
             case '!':
                 index = expression.indexOf("=>");
-                String output;
                 if (index > 1) {
                     var = expression.substring(1, index).trim();
-                    output = expression.substring(index + 2);
-                    val = resolve(var,env);
+                    val = resolve(var, env);
                     JsonValue.ValueType cond = c == '?' ? JsonValue.ValueType.TRUE : JsonValue.ValueType.FALSE;
                     if (val != null && val.getValueType() == cond) {
-                        String unEscaped = output.replace("{-","{").replace("}-","}");
+                        output = expression.substring(index + 2);
+                        String unEscaped = output.replace("{-", "{").replace("}-", "}");
                         StringReader reader = new StringReader(unEscaped);
-                        return process(reader,env);
+                        return process(reader, env);
                     } else
                         return "";
                 }
                 break;
+            case '@':
+                index = expression.indexOf(":");
+                int index2 = expression.indexOf("=>");
+                if (index > 1 && index2 > index) {
+                    var = expression.substring(1, index).trim();
+                    String iteratorName = expression.substring(index + 1, index2).trim();
+                    JsonValue iterator = resolve(iteratorName, env);
+                    if (iterator.getValueType() == JsonValue.ValueType.ARRAY) {
+                        output = expression.substring(index2 + 2);
+                        JsonArray array = (JsonArray) iterator;
+                        String unEscaped = output.replace("{-", "{").replace("}-", "}");
+                        StringBuilder sb = new StringBuilder();
+                        for (JsonValue value : array) {
+                            JsonObjectBuilder job = Json.createObjectBuilder();
+                            for (Map.Entry<String,JsonValue> entry : env.entrySet()){
+                                job.add(entry.getKey(),entry.getValue());
+                            }
+                            job.add(var,value);
+                            sb.append(process(new StringReader(unEscaped), job.build()));
+                        }
+                        return sb.toString();
+                    }
 
+                }
+                break;
         }
         return "EVAL";
     }
 
-    private static JsonValue resolve(String variable, JsonObject env){
+    private static JsonValue resolve(String variable, JsonObject env) {
         JsonObject scope = env;
         String[] parts = variable.split("\\.");
-        if(parts.length >0 ){
+        if (parts.length > 0) {
 
-        for (int i =0;i<parts.length-1;i++){
-            JsonValue val = scope.get(parts[i]);
-            if(val.getValueType() == JsonValue.ValueType.OBJECT){
-                scope = (JsonObject) val;
-            } else
-                return JsonValue.NULL;
-        }
+            for (int i = 0; i < parts.length - 1; i++) {
+                JsonValue val = scope.get(parts[i]);
+                if (val.getValueType() == JsonValue.ValueType.OBJECT) {
+                    scope = (JsonObject) val;
+                } else
+                    return JsonValue.NULL;
+            }
 
-        return scope.get(parts[parts.length-1]);
+            return scope.get(parts[parts.length - 1]);
         } else {
             return scope.get(variable);
         }
