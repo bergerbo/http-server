@@ -9,31 +9,65 @@
 <h1> HELLO LATENESS MY OLD FRIEND</h1>
 
 <div>
+    <!-- display variable with  -->
+    {{ $chocolate }}
     {{ $chocolate.taste }}
+    {{ $chocolate.love }}
+    {{ $chocolate.enough }}
 </div>
+<br/>
 <div>
-    Chocolate
-</div>
-<div>
+    <!-- if with nesting -->
     {{ ?chocolate.love =>
     <div>
-        Super Chocolate tastes {-{ $chocolate.taste  }-}
+        Super Chocolate tastes {-{ $chocolate.taste }-}
     </div>
     }}
 </div>
+<br/>
 <div>
+    <!-- if not -->
     {{ !chocolate.enough =>
-        More choco plz
+    More choco plz
     }}
 </div>
-
+<br/>
 <div>
+    <!-- for with nesting -->
     {{ @letter : letters =>
-        <div>
-            this is a letter ! : {-{$letter}-}
-        </div>
+    <div>
+        this is a letter ! : {-{$letter}-}
+    </div>
+    }}
+</div>
+<br/>
+<div>
+    <!-- if and for with  double nesting -->
+    {{ ?chocolate.love =>
+    <div>
+        <div> Miam !</div>
+        <ul>
+            {-{ @letter : letters =>
+            <li>
+                this is a letter ! : {--{$letter}--}
+            </li>
+            }-}
+        </ul>
+    </div>
     }}
 </div>
 
+<br/>
+<div>
+    <!-- partial without environnement -->
+    {{ > test2.html }}
+</div>
+
+
+<br/>
+<div>
+    <!-- partial with environnement -->
+    {{ > test2.html : chocolate }}
+</div>
 </body>
 </html>

@@ -19,7 +19,9 @@ public class TemplateProcessor {
 
     public static String process(String filename, JsonObject env) throws IOException {
         FileReader f = new FileReader(filename);
-        return process(f, env);
+        String res = process(f, env);
+        f.close();
+        return res;
     }
 
     private static String process(Reader f, JsonObject env) throws IOException {
@@ -65,9 +67,9 @@ public class TemplateProcessor {
             case '$':
                 index = expression.indexOf(" ");
                 if (index > 1)
-                    var = expression.substring(1, index);
+                    var = expression.substring(1, index).trim();
                 else
-                    var = expression.substring(1);
+                    var = expression.substring(1).trim();
 
                 val = resolve(var, env);
                 if (val != null)
@@ -81,7 +83,7 @@ public class TemplateProcessor {
                     val = resolve(var, env);
                     JsonValue.ValueType cond = c == '?' ? JsonValue.ValueType.TRUE : JsonValue.ValueType.FALSE;
                     if (val != null && val.getValueType() == cond) {
-                        output = expression.substring(index + 2);
+                        output = expression.substring(index + 2).trim();
                         String unEscaped = output.replace("{-", "{").replace("}-", "}");
                         StringReader reader = new StringReader(unEscaped);
                         return process(reader, env);
@@ -97,7 +99,7 @@ public class TemplateProcessor {
                     String iteratorName = expression.substring(index + 1, index2).trim();
                     JsonValue iterator = resolve(iteratorName, env);
                     if (iterator.getValueType() == JsonValue.ValueType.ARRAY) {
-                        output = expression.substring(index2 + 2);
+                        output = expression.substring(index2 + 2).trim();
                         JsonArray array = (JsonArray) iterator;
                         String unEscaped = output.replace("{-", "{").replace("}-", "}");
                         StringBuilder sb = new StringBuilder();
@@ -114,8 +116,26 @@ public class TemplateProcessor {
 
                 }
                 break;
+            case '>':
+                index = expression.indexOf(":");
+                String file;
+                JsonObject childEnv = Json.createObjectBuilder().build();
+                if (index > 1){
+                    file = expression.substring(1, index).trim();
+                    var = expression.substring(index+1).trim();
+                    val = resolve(var,env);
+                    if(val.getValueType() == JsonValue.ValueType.OBJECT){
+                        childEnv = (JsonObject) val;
+                    }
+                }
+                else{
+                    file = expression.substring(1).trim();
+                }
+
+                return process(file,childEnv);
+
         }
-        return "EVAL";
+        return "";
     }
 
     private static JsonValue resolve(String variable, JsonObject env) {
