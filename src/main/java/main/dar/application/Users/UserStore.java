@@ -70,7 +70,7 @@ public class UserStore {
         }};
 
         if (!SessionManager.getInstance().areCookiesValid(requiredCookies, request)) {
-            HttpResponse res =new HttpResponse("auth cookie wasn't found!", 403);
+            HttpResponse res = new HttpResponse("auth cookie wasn't found!", 403);
             return res;
         }
 
