@@ -2,8 +2,10 @@ package main.dar.server;
 
 import main.dar.server.Types.ParamType;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,7 +13,7 @@ import java.util.HashMap;
  * Created by iShavgula on 01/03/16.
  */
 public class RouteBinding {
-    private  String urlPattern;
+    private String urlPattern;
     private HttpRequest.Method httpMethod;
     private ArrayList<ParamType> params;
 
@@ -32,7 +34,7 @@ public class RouteBinding {
         params.add(httpParam);
     }
 
-    public boolean match(HttpRequest request){
+    public boolean match(HttpRequest request) {
         if (!request.getMethod().equals(httpMethod)) {
             return false;
         }
@@ -65,9 +67,9 @@ public class RouteBinding {
         return true;
     }
 
-    public HttpResponse process(HttpRequest request){
+    public HttpResponse process(HttpRequest request) {
         try {
-            return (HttpResponse) method.invoke(handler,bindParams(request));
+            return (HttpResponse) method.invoke(handler, bindParams(request));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             return null;
@@ -78,16 +80,20 @@ public class RouteBinding {
     }
 
     private Object[] bindParams(HttpRequest request) {
-        Object [] result = new Object[params.size() + 1];
+        Object[] result = new Object[params.size() + 1];
 
         result[0] = request;
 
-        for (int i = 0; i < params.size(); i ++) {
+        for (int i = 0; i < params.size(); i++) {
             HashMap<String, String> requestParameters = request.getParameters();
             requestParameters.putAll(request.getUrlParameters());
             String val = request.getParameters().get(params.get(i).getParam().value());
             if (val == null || params.get(i).isString()) {
-                result[i + 1] = val;
+                try {
+                    result[i + 1] = URLDecoder.decode(val, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    result[i + 1] = val;
+                }
                 continue;
             }
 
@@ -127,7 +133,7 @@ public class RouteBinding {
             return false;
         }
 
-        for (int i = 0; i < urlPatternSegments.length; i ++) {
+        for (int i = 0; i < urlPatternSegments.length; i++) {
             if (urlPatternSegments[i].toLowerCase().equals(requestUrlSegments[i].toLowerCase())) {
                 continue;
             } else if (!urlPatternSegments[i].startsWith("$")) {
