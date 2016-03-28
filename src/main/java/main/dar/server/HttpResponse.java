@@ -10,12 +10,17 @@ import java.util.Map;
 public class HttpResponse {
 
     private String body;
+    private byte[] rawData;
+
+    private String contentType;
     private int statusCode;
     private HashMap<String, String> headers;
 
     public HttpResponse() {
         this.body = "Internal error";
+        this.contentType = "text/html";
         statusCode = 500;
+        rawData = null;
         headers = new HashMap<>();
     }
 
@@ -41,10 +46,25 @@ public class HttpResponse {
         this.statusCode = statusCode;
     }
 
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
     private String getStartingHeaders() {
-        return "HTTP/1.1 " + Integer.toString(statusCode) + " " + statusCodeMessage() + "\r\n" +
-                "Content-Type: text/html\r\n" +
-                "Content-Length: " + body.length() + "\r\n";
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Content-Type:" + contentType + " \r\n");
+        if (rawData == null) {
+            sb.append("Content-Length: " + body.length() + "\r\n");
+        } else {
+            sb.append("Content-Length: " + rawData.length + "\r\n");
+        }
+
+        return sb.toString();
     }
 
     public void addHeader(String key, String value) {
@@ -69,7 +89,7 @@ public class HttpResponse {
         return "Unreal";
     }
 
-    private String headers() {
+    public String headers() {
         String res = getStartingHeaders();
         for (Map.Entry header : headers.entrySet()) {
             res += header.getKey() + ": " + header.getValue() + "\r\n";
@@ -80,7 +100,15 @@ public class HttpResponse {
         return res;
     }
 
-    public String content() {
-        return headers() + body;
+    public String headingLine() {
+        return "HTTP/1.1 " + Integer.toString(statusCode) + " " + statusCodeMessage() + "\r\n";
+    }
+
+    public byte[] getRawData() {
+        return rawData;
+    }
+
+    public void setRawData(byte[] rawData) {
+        this.rawData = rawData;
     }
 }
