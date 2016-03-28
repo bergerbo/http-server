@@ -25,8 +25,8 @@ import java.util.ArrayList;
 public class ProfileController {
 
     @Route(method = HttpRequest.Method.GET, urlPattern = "/profile")
-    public HttpResponse GET(HttpRequest request){
-        ArrayList<String> requiredCookies = new ArrayList<String>(){{
+    public HttpResponse GET(HttpRequest request) {
+        ArrayList<String> requiredCookies = new ArrayList<String>() {{
             add("auth");
         }};
 
@@ -36,7 +36,7 @@ public class ProfileController {
         }
 
         String sessionId = SessionManager.getSessionIdForRequest(request);
-        Integer userId = (Integer)SessionManager.getInstance().getSessionInfo(sessionId);
+        Integer userId = (Integer) SessionManager.getInstance().getSessionInfo(sessionId);
         if (userId == null) {
             return new HttpResponse("Session is closed", 401);
         }
@@ -60,8 +60,8 @@ public class ProfileController {
     public HttpResponse addNewSkill(HttpRequest request,
                                     @Param("skill") String skill,
                                     @Param("skillExperience") int skillExperience,
-                                    @Param("skillLevel") int skillLevel){
-        ArrayList<String> requiredCookies = new ArrayList<String>(){{
+                                    @Param("skillLevel") int skillLevel) {
+        ArrayList<String> requiredCookies = new ArrayList<String>() {{
             add("auth");
         }};
 
@@ -71,7 +71,7 @@ public class ProfileController {
         }
 
         String sessionId = SessionManager.getSessionIdForRequest(request);
-        Integer userId= (Integer)SessionManager.getInstance().getSessionInfo(sessionId);
+        Integer userId = (Integer) SessionManager.getInstance().getSessionInfo(sessionId);
         if (userId == null) {
             return new HttpResponse("Session is closed", 401);
         }
@@ -85,6 +85,7 @@ public class ProfileController {
         User user = DB.getInstance().getUser(userId);
 
         try {
+
             String body = TemplateProcessor.process("develUp/profile.html", user.getJsonData().build());
             response.setBody(body);
         } catch (IOException e) {

@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 public class TemplateProcessor {
 
     public static String process(String filename, JsonObject env) throws IOException {
-        FileReader f = new FileReader(filename);
+        FileReader f = new FileReader(Router.getInstance().config.applicationRoot()+"/"+filename);
         String res = process(f, env);
         f.close();
         return res;
@@ -119,7 +119,7 @@ public class TemplateProcessor {
             case '>':
                 index = expression.indexOf(":");
                 String file;
-                JsonObject childEnv = Json.createObjectBuilder().build();
+                JsonObject childEnv = env;
                 if (index > 1){
                     file = expression.substring(1, index).trim();
                     var = expression.substring(index+1).trim();
