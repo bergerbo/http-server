@@ -8,7 +8,7 @@ import java.util.*;
  * Created by iShavgula on 15/03/16.
  */
 public class SessionManager {
-    private static int expirationTime = 10000;
+    private static int expirationTime = 600000;
 
     private static SessionManager ourInstance = new SessionManager();
     public static SessionManager getInstance() {
