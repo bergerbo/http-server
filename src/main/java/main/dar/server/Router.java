@@ -28,7 +28,7 @@ public class Router {
     }
 
     private ArrayList<RouteBinding> bindings;
-    private RouterConfig config;
+    public RouterConfig config;
 
     private Router() {
         try {
