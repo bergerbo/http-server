@@ -36,7 +36,7 @@ public class ProfileController {
         }
 
         String sessionId = SessionManager.getSessionIdForRequest(request);
-        Integer userId= (Integer)SessionManager.getInstance().getSessionInfo(sessionId);
+        Integer userId = (Integer)SessionManager.getInstance().getSessionInfo(sessionId);
         if (userId == null) {
             return new HttpResponse("Session is closed", 401);
         }
@@ -44,9 +44,10 @@ public class ProfileController {
         HttpResponse response = new HttpResponse();
         response.setStatusCode(200);
 
+        User user = DB.getInstance().getUser(userId);
 
         try {
-            String body = TemplateProcessor.process("develUp/profile.html", getJsonDataForUser(userId).build());
+            String body = TemplateProcessor.process("develUp/profile.html", user.getJsonData().build());
             response.setBody(body);
         } catch (IOException e) {
             response.setStatusCode(500);
@@ -81,34 +82,15 @@ public class ProfileController {
         HttpResponse response = new HttpResponse();
         response.setStatusCode(200);
 
+        User user = DB.getInstance().getUser(userId);
 
         try {
-            String body = TemplateProcessor.process("develUp/profile.html", getJsonDataForUser(userId).build());
+            String body = TemplateProcessor.process("develUp/profile.html", user.getJsonData().build());
             response.setBody(body);
         } catch (IOException e) {
             response.setStatusCode(500);
         }
 
         return response;
-    }
-
-    private JsonObjectBuilder getJsonDataForUser(int userId) {
-        User user = DB.getInstance().getUser(userId);
-
-        JsonObjectBuilder json = Json.createObjectBuilder();
-        json.add("name", user.fullName());
-
-        JsonArrayBuilder skills = Json.createArrayBuilder();
-        for (Skill skill : user.getSkills()) {
-            JsonObjectBuilder s = Json.createObjectBuilder();
-            s.add("name", skill.name);
-            s.add("experience", skill.getExperienceDescription());
-            s.add("level", skill.getLevelDescription());
-            skills.add(s);
-        }
-
-        json.add("skills", skills);
-
-        return json;
     }
 }
