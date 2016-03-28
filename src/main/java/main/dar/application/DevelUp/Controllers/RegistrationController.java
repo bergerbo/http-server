@@ -53,7 +53,7 @@ public class RegistrationController {
         SessionManager.getInstance().addSession(sessionId, new Integer(user.id));
 
         try {
-            String body = TemplateProcessor.process("develUp/profile.html", user.getJsonData().build());
+            String body = TemplateProcessor.process("profile.html", user.getJsonData().build());
             response.setBody(body);
         } catch (IOException e) {
             response.setStatusCode(500);

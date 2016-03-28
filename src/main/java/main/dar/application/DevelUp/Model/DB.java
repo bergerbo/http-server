@@ -1,5 +1,8 @@
 package main.dar.application.DevelUp.Model;
 
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import java.util.ArrayList;
 
 /**
@@ -43,6 +46,16 @@ public class DB {
         return null;
     }
 
+    public User getUserWithEmailAndPassword(String email, String password) {
+        for (User user : users) {
+            if (user.email.toLowerCase().equals(email.toLowerCase()) && user.password.equals(password)) {
+                return user;
+            }
+        }
+
+        return null;
+    }
+
     public int getNewId() {
         int id = 0;
         for (User user : users) {
@@ -62,6 +75,37 @@ public class DB {
         user.addSkill(new Skill("Skill 4", 3, 1));
 
         return user;
+    }
+
+    public JsonObjectBuilder getAllUsersData() {
+        JsonObjectBuilder json = Json.createObjectBuilder();
+
+        JsonArrayBuilder usersJson = Json.createArrayBuilder();
+        int styleIdx = 1;
+        for (User user: users) {
+            JsonObjectBuilder userJson = Json.createObjectBuilder();
+            userJson.add("fullName", user.fullName());
+
+            JsonArrayBuilder skillsJson = Json.createArrayBuilder();
+            for (Skill skill : user.getSkills()) {
+                JsonObjectBuilder skillJson = Json.createObjectBuilder();
+                skillJson.add("name", skill.name);
+                skillJson.add("experience", skill.getExperienceDescription());
+                skillJson.add("level", skill.getLevelDescription());
+                skillsJson.add(skillJson);
+            }
+
+            userJson.add("skills", skillsJson);
+            userJson.add("style", styleIdx);
+
+            usersJson.add(userJson);
+
+            styleIdx = styleIdx % 6 + 1;
+        }
+
+        json.add("users", usersJson);
+
+        return json;
     }
 
 }
