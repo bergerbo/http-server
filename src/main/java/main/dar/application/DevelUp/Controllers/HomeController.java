@@ -17,32 +17,58 @@ import java.util.ArrayList;
 @WebHandler
 public class HomeController {
 
-
-
     @Route(method = HttpRequest.Method.GET, urlPattern = "/home")
     public HttpResponse home(HttpRequest request){
-//        ArrayList<String> requiredCookies = new ArrayList<String>() {{
-//            add("auth");
-//        }};
-//
-//        if (!SessionManager.getInstance().areCookiesValid(requiredCookies, request)) {
-//            HttpResponse res = new HttpResponse("auth cookie wasn't found!", 403);
-//            return res;
-//        }
-//
-//        String sessionId = SessionManager.getSessionIdForRequest(request);
-//        Integer userId = (Integer) SessionManager.getInstance().getSessionInfo(sessionId);
-//        if (userId == null) {
-//            return new HttpResponse("Session is closed", 401);
-//        }
-//
+        ArrayList<String> requiredCookies = new ArrayList<String>() {{
+            add("auth");
+        }};
+
+        if (!SessionManager.getInstance().areCookiesValid(requiredCookies, request)) {
+            HttpResponse res = new HttpResponse("auth cookie wasn't found!", 403);
+            return res;
+        }
+
+        String sessionId = SessionManager.getSessionIdForRequest(request);
+        Integer userId = (Integer) SessionManager.getInstance().getSessionInfo(sessionId);
+        if (userId == null) {
+            return new HttpResponse("Session is closed", 401);
+        }
+
         HttpResponse response = new HttpResponse();
         response.setStatusCode(200);
 
-//        User user = DB.getInstance().getUser(userId);
-
         try {
             String body = TemplateProcessor.process("index.html", DB.getInstance().getAllUsersData().build());
+            response.setBody(body);
+        } catch (IOException e) {
+            response.setStatusCode(500);
+        }
+
+        return response;
+    }
+
+    @Route(method = HttpRequest.Method.GET, urlPattern = "/home/users")
+    public HttpResponse homePartial(HttpRequest request){
+        ArrayList<String> requiredCookies = new ArrayList<String>() {{
+            add("auth");
+        }};
+
+        if (!SessionManager.getInstance().areCookiesValid(requiredCookies, request)) {
+            HttpResponse res = new HttpResponse("auth cookie wasn't found!", 403);
+            return res;
+        }
+
+        String sessionId = SessionManager.getSessionIdForRequest(request);
+        Integer userId = (Integer) SessionManager.getInstance().getSessionInfo(sessionId);
+        if (userId == null) {
+            return new HttpResponse("Session is closed", 401);
+        }
+
+        HttpResponse response = new HttpResponse();
+        response.setStatusCode(200);
+
+        try {
+            String body = TemplateProcessor.process("_users.html", DB.getInstance().getAllUsersData().build());
             response.setBody(body);
         } catch (IOException e) {
             response.setStatusCode(500);

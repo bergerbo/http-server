@@ -1,0 +1,33 @@
+<section class="tiles" id="users">
+{{ @user : users =>
+	<article class="style{-{$user.style}-}">
+		<span class="image">
+			<img src="/images/profile.jpg" alt="" />
+		</span>
+		<a href="generic.html">
+			<h2>{-{$user.fullName}-}</h2>
+			<br />
+			<div style="text-align: left;">
+				<table>
+					<thead>
+						<tr>
+							<th>Skill</th>
+							<th>Experience</th>
+							<th>Level</th>
+						</tr>
+					</thead>
+					<tbody>
+						{-{ @skill : user.skills =>
+						<tr>
+							<td style="font-size: 0.8em;">{--{$skill.name}--}</td>
+							<td style="font-size: 0.8em;">{--{$skill.experience}--}</td>
+							<td style="font-size: 0.8em;">{--{$skill.level}--}</td>
+						</tr>
+			            }-}
+					</tbody>
+				</table>
+			</div>
+		</a>
+	</article>
+}}
+</section>
