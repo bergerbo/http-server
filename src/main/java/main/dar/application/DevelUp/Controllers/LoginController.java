@@ -57,7 +57,7 @@ public class LoginController {
         SessionManager.getInstance().closeSession(sessionId);
 
 
-        return HttpResponse.redirect("/home");
+        return HttpResponse.redirect("/register");
     }
 
 }
