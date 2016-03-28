@@ -31,18 +31,18 @@
 								</h1>
 								<p>Register now or log in to get direct access to the best developers out there!</p>
 							</header>
-							
+
 							<section>
 								<h1>Log In</h1>
 								<form method="post" action="login">
 									<div class="field half first">
-										<input type="email" name="email" id="email" placeholder="Email" />
+										<input type="email" name="email" id="emailLogin" placeholder="Email" />
 									</div>
 									<div class="field half">
-										<input type="password" name="password" id="password" placeholder="password"/>
+										<input type="password" name="password" id="passwordLogin" placeholder="password"/>
 									</div>
 									<ul class="actions">
-										<li><input type="submit" value="Log In" class="special" /></li>
+										<li><input type="submit" value="Log In" class="special"  onclick="return isValidLoginForm()"/></li>
 									</ul>
 								</form>
 							</section>
@@ -75,7 +75,7 @@
 													<img src="/images/pic14.jpg" alt="" style="max-width: 25%; vertical-align: middle; border-radius: 4px;" />
 													<span style="margin-left: 20px;">Fringilla nisl.</span>
 												</div>
-											</li>
+											</li>email
 										</ul>
 									</div>
 									<div class="6u 12u$(medium)">
@@ -83,19 +83,19 @@
 										<p>While it's free!</p>
 										<form method="post" action="register">
 										<div class="field">
-											<input type="text" name="name" id="name" placeholder="Name" />
+											<input type="text" name="name" id="nameRegister" placeholder="Name" />
 										</div>
 										<div class="field">
-											<input type="text" name="surname" id="surname" placeholder="Surname" />
+											<input type="text" name="surname" id="surnameRegister" placeholder="Surname" />
 										</div>
 											<div class="field">
-												<input type="email" name="email" id="email" placeholder="Email" />
+												<input type="email" name="email" id="emailRegister" placeholder="Email" />
 											</div>
 											<div class="field">
-												<input type="password" name="password" id="password" placeholder="password"/>
+												<input type="password" name="password" id="passwordRegister" placeholder="password"/>
 											</div>
 											<ul class="actions">
-												<li><input type="submit" value="Sign Up" class="special" /></li>
+												<li><input type="submit" value="Sign Up" class="special" onclick="return isValidRegistrationForm()" /></li>
 											</ul>
 										</form>
 									</div>
@@ -151,6 +151,28 @@
 			<script src="/assets/js/util.js"></script>
 			<!--[if lte IE 8]><script src="/assets/js/ie/respond.min.js"></script><![endif]-->
 			<script src="/assets/js/main.js"></script>
+		<script type="text/javascript">
+				function isValidRegistrationForm() {
+				    var name = document.getElementById("nameRegister").value;
+				    var surname = document.getElementById("surnameRegister").value;
+				    var email = document.getElementById("emailRegister").value;
+				    var password = document.getElementById("passwordRegister").value;
+				    if (name == "" || surname == "" || email == "" || password == "") {
+				    	alert('All fields are required!');
+				        return false;
+				    }
+				    return true;
+				};
 
+				function isValidLoginForm() {
+				    var email = document.getElementById("emailLogin").value;
+				    var password = document.getElementById("passwordLogin").value;
+				    if (email == "" || password == "") {
+				    	alert('All fields are required!');
+				        return false;
+				    }
+				    return true;
+				};
+			</script>
 	</body>
 </html>

@@ -23,10 +23,10 @@ public class DB {
     }
 
     public void addUser(User user) {
-        user.addSkill(new Skill("Skill 1", 1, 2));
-        user.addSkill(new Skill("Skill 2", 2, 3));
-        user.addSkill(new Skill("Skill 3", 1, 4));
-        user.addSkill(new Skill("Skill 4", 3, 1));
+//        user.addSkill(new Skill("Skill 1", 1, 2));
+//        user.addSkill(new Skill("Skill 2", 2, 3));
+//        user.addSkill(new Skill("Skill 3", 1, 4));
+//        user.addSkill(new Skill("Skill 4", 3, 1));
         users.add(user);
     }
 
@@ -68,40 +68,28 @@ public class DB {
         ArrayList<User> users = new ArrayList<>();
 
         User user1 = new User(getNewId(), "Giorgi", "Shavgulidze", "giorgishavgulidze@gmail.com", "123");
-        user1.addSkill(new Skill("Skill 1", 1, 2));
+        user1.addSkill(new Skill("Skill 1", 4, 1));
         user1.addSkill(new Skill("Skill 2", 2, 3));
-        user1.addSkill(new Skill("Skill 3", 1, 4));
-        user1.addSkill(new Skill("Skill 4", 3, 1));
+        user1.addSkill(new Skill("Skill 3", 4, 2));
 
         User user2 = new User(getNewId(), "Boris", "Berger", "borisberger@gmail.com", "123");
-        user2.addSkill(new Skill("Skill 1", 1, 2));
-        user2.addSkill(new Skill("Skill 2", 2, 3));
+        user2.addSkill(new Skill("Skill 1", 4, 2));
+        user2.addSkill(new Skill("Skill 2", 3, 1));
         user2.addSkill(new Skill("Skill 3", 1, 4));
-        user2.addSkill(new Skill("Skill 4", 3, 1));
 
         User user3 = new User(getNewId(), "Super", "Man", "superman@gmail.com", "123");
         user3.addSkill(new Skill("Skill 1", 1, 2));
         user3.addSkill(new Skill("Skill 2", 2, 3));
-        user3.addSkill(new Skill("Skill 3", 1, 4));
-        user3.addSkill(new Skill("Skill 4", 3, 1));
 
         User user4 = new User(getNewId(), "Bat", "Man", "batman@gmail.com", "123");
         user4.addSkill(new Skill("Skill 1", 1, 2));
         user4.addSkill(new Skill("Skill 2", 2, 3));
-        user4.addSkill(new Skill("Skill 3", 1, 4));
-        user4.addSkill(new Skill("Skill 4", 3, 1));
 
         User user5 = new User(getNewId(), "Spider", "Man", "spiderman@gmail.com", "123");
         user5.addSkill(new Skill("Skill 1", 1, 2));
-        user5.addSkill(new Skill("Skill 2", 2, 3));
-        user5.addSkill(new Skill("Skill 3", 1, 4));
-        user5.addSkill(new Skill("Skill 4", 3, 1));
 
         User user6 = new User(getNewId(), "Sam", "Sung", "samsung@gmail.com", "123");
         user6.addSkill(new Skill("Skill 1", 1, 2));
-        user6.addSkill(new Skill("Skill 2", 2, 3));
-        user6.addSkill(new Skill("Skill 3", 1, 4));
-        user6.addSkill(new Skill("Skill 4", 3, 1));
 
         users.add(user1);
         users.add(user2);
@@ -118,6 +106,7 @@ public class DB {
 
         JsonArrayBuilder usersJson = Json.createArrayBuilder();
         int styleIdx = 1;
+        users.sort((u1,u2)-> (u1.getSkills().size() < u2.getSkills().size()) ? 1 : -1);
         for (User user: users) {
             JsonObjectBuilder userJson = Json.createObjectBuilder();
             userJson.add("fullName", user.fullName());
