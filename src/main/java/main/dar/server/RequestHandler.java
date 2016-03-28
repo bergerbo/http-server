@@ -64,6 +64,10 @@ class RequestHandler implements Runnable {
                             res.setContentType("image/jpeg");
                             res.setRawData(encoded);
                             break;
+                        case "woff2":
+                            res.setContentType("font/woff2");
+                            res.setRawData(encoded);
+                            break;
 
                     }
 
