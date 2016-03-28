@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>Out site by B&G</title>
+		<title>Devel Up by B&G</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<!--[if lte IE 8]><script src="/assets/js/ie/html5shiv.js"></script><![endif]-->
@@ -24,7 +24,7 @@
 
 							<!-- Logo -->
 								<a href="index.html" class="logo">
-									<span class="symbol"><img src="/images/logo.svg" alt="" /></span><span class="title">Our site</span>
+									<span class="symbol"><img src="/images/profile.jpg" alt="" /></span><span class="title">Our site</span>
 								</a>
 
 							<!-- Nav -->
@@ -55,12 +55,26 @@
 									</span>
 									<a href="generic.html">
 										<h2>{-{$user.fullName}-}</h2>
+										<br />
 										<div style="text-align: left;">
-											<ul>
-												{-{ @skill : user.skills =>
-												<li> {--{$skill.name}--}.</li>
-												}-}
-											</ul>
+											<table>
+												<thead>
+													<tr>
+														<th>Skill</th>
+														<th>Experience</th>
+														<th>Level</th>
+													</tr>
+												</thead>
+												<tbody>
+													{-{ @skill : user.skills =>
+													<tr>
+														<td style="font-size: 0.8em;">{--{$skill.name}--}</td>
+														<td style="font-size: 0.8em;">{--{$skill.experience}--}</td>
+														<td style="font-size: 0.8em;">{--{$skill.level}--}</td>
+													</tr>
+										            }-}
+												</tbody>
+											</table>
 										</div>
 									</a>
 								</article>

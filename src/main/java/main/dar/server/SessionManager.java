@@ -39,11 +39,15 @@ public class SessionManager {
         sessions.put(id, sessionInfo);
     }
 
+    public void closeSession(String id) {
+        sessions.remove(id);
+        dateExpiration.remove(id);
+    }
+
     public Object getSessionInfo(String id) {
         if (dateExpiration.get(id) == null) return null;
         if (dateExpiration.get(id).before(new Date())) {
-            sessions.remove(id);
-            dateExpiration.remove(id);
+            closeSession(id);
             return null;
         }
 
