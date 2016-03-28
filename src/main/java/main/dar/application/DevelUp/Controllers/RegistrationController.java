@@ -52,20 +52,13 @@ public class RegistrationController {
         String sessionId = SessionManager.getSessionIdForRequest(request);
         SessionManager.getInstance().addSession(sessionId, new Integer(user.id));
 
-        request.addCookie("auth", c.hashValue());
+        try {
+            String body = TemplateProcessor.process("develUp/profile.html", user.getJsonData().build());
+            response.setBody(body);
+        } catch (IOException e) {
+            response.setStatusCode(500);
+        }
 
-        return (new ProfileController()).GET(request);
-
-//        JsonObjectBuilder json = Json.createObjectBuilder();
-//        json.add("name", user.fullName());
-//
-//        try {
-//            String body = TemplateProcessor.process("develUp/profile.html", json.build());
-//            response.setBody(body);
-//        } catch (IOException e) {
-//            response.setStatusCode(500);
-//        }
-//
-//        return response;
+        return response;
     }
 }

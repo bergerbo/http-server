@@ -1,5 +1,8 @@
 package main.dar.application.DevelUp.Model;
 
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import java.util.ArrayList;
 
 /**
@@ -38,4 +41,21 @@ public class User {
         this.skills.addAll(skills);
     }
 
+    public JsonObjectBuilder getJsonData() {
+        JsonObjectBuilder json = Json.createObjectBuilder();
+        json.add("name", fullName());
+
+        JsonArrayBuilder skills = Json.createArrayBuilder();
+        for (Skill skill : getSkills()) {
+            JsonObjectBuilder s = Json.createObjectBuilder();
+            s.add("name", skill.name);
+            s.add("experience", skill.getExperienceDescription());
+            s.add("level", skill.getLevelDescription());
+            skills.add(s);
+        }
+
+        json.add("skills", skills);
+
+        return json;
+    }
  }
