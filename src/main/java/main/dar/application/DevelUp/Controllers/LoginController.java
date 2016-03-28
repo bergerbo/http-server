@@ -52,20 +52,12 @@ public class LoginController {
 
     @Route(method = HttpRequest.Method.GET, urlPattern = "/logout")
     public HttpResponse logout(HttpRequest request){
-        HttpResponse response = new HttpResponse();
-        response.setStatusCode(200);
 
         String sessionId = SessionManager.getSessionIdForRequest(request);
         SessionManager.getInstance().closeSession(sessionId);
 
-        try {
-            String body = TemplateProcessor.process("register.html", null);
-            response.setBody(body);
-        } catch (IOException e) {
-            response.setStatusCode(500);
-        }
 
-        return response;
+        return HttpResponse.redirect("/home");
     }
 
 }

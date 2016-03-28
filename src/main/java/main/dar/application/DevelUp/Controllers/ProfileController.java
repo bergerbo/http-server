@@ -31,14 +31,16 @@ public class ProfileController {
         }};
 
         if (!SessionManager.getInstance().areCookiesValid(requiredCookies, request)) {
-            HttpResponse res = new HttpResponse("auth cookie wasn't found!", 403);
-            return res;
+            return HttpResponse.redirect("/register");
+//            HttpResponse res = new HttpResponse("auth cookie wasn't found!", 403);
+//            return res;
         }
 
         String sessionId = SessionManager.getSessionIdForRequest(request);
         Integer userId = (Integer) SessionManager.getInstance().getSessionInfo(sessionId);
         if (userId == null) {
-            return new HttpResponse("Session is closed", 401);
+            return HttpResponse.redirect("/register");
+//            return new HttpResponse("Session is closed", 401);
         }
 
         HttpResponse response = new HttpResponse();
@@ -66,14 +68,16 @@ public class ProfileController {
         }};
 
         if (!SessionManager.getInstance().areCookiesValid(requiredCookies, request)) {
-            HttpResponse res = new HttpResponse("auth cookie wasn't found!", 403);
-            return res;
+            return HttpResponse.redirect("/register");
+//            HttpResponse res = new HttpResponse("auth cookie wasn't found!", 403);
+//            return res;
         }
 
         String sessionId = SessionManager.getSessionIdForRequest(request);
         Integer userId = (Integer) SessionManager.getInstance().getSessionInfo(sessionId);
         if (userId == null) {
-            return new HttpResponse("Session is closed", 401);
+            return HttpResponse.redirect("/register");
+//            return new HttpResponse("Session is closed", 401);
         }
 
         Skill newSkill = new Skill(skill, skillExperience, skillLevel);

@@ -38,6 +38,7 @@ public class HttpRequest {
     private HashMap<String, String> urlParameters;
     private String body;
 
+
     public static HttpRequest parse(BufferedReader in) throws IOException, BadlyFormedHttpRequest {
         String methodLine = in.readLine();
 //        System.out.println(methodLine);

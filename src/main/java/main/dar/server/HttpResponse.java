@@ -30,6 +30,14 @@ public class HttpResponse {
         headers = new HashMap<>();
     }
 
+
+    public static HttpResponse redirect(String url){
+        HttpResponse res = new HttpResponse();
+        res.statusCode = 302;
+        res.addHeader("Location",url);
+        return  res;
+    }
+
     public String getBody() {
         return body;
     }
