@@ -32,9 +32,9 @@ class RequestHandler implements Runnable {
 
             HttpRequest request = HttpRequest.parse(bufferedReader);
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-            for (Map.Entry<String, String> c : request.getCookies().entrySet()) {
-                System.out.println(c.getKey() + " " + c.getValue());
-            }
+//            for (Map.Entry<String, String> c : request.getCookies().entrySet()) {
+//                System.out.println(c.getKey() + " " + c.getValue());
+//            }
             HttpResponse res = new HttpResponse();
 
             RouteBinding binding = router.match(request);
