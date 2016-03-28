@@ -46,7 +46,7 @@ public class ProfileController {
 
 
         try {
-            String body = TemplateProcessor.process("develUp/profile.html", getJsonDataForUser(userId).build());
+            String body = TemplateProcessor.process("profile.html", getJsonDataForUser(userId).build());
             response.setBody(body);
         } catch (IOException e) {
             response.setStatusCode(500);
@@ -83,7 +83,7 @@ public class ProfileController {
 
 
         try {
-            String body = TemplateProcessor.process("develUp/profile.html", getJsonDataForUser(userId).build());
+            String body = TemplateProcessor.process("profile.html", getJsonDataForUser(userId).build());
             response.setBody(body);
         } catch (IOException e) {
             response.setStatusCode(500);

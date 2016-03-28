@@ -25,7 +25,7 @@ public class RegistrationController {
         response.setStatusCode(200);
 
         try {
-            String body = TemplateProcessor.process("develUp/register.html",null);
+            String body = TemplateProcessor.process("register.html",null);
             response.setBody(body);
         } catch (IOException e) {
             response.setStatusCode(500);
